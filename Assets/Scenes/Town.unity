@@ -744,6 +744,9 @@ GameObject:
   - component: {fileID: 95843054}
   - component: {fileID: 95843056}
   - component: {fileID: 95843055}
+  - component: {fileID: 95843059}
+  - component: {fileID: 95843058}
+  - component: {fileID: 95843057}
   m_Layer: 9
   m_Name: LongGrass
   m_TagString: Untagged
@@ -2019,6 +2022,89 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
+--- !u!61 &95843057
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 95843053}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 1
+  m_Offset: {x: -6.5, y: 1.5}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 49, y: 31}
+  m_EdgeRadius: 0
+--- !u!66 &95843058
+CompositeCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 95843053}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_GeometryType: 1
+  m_GenerationType: 0
+  m_EdgeRadius: 0
+  m_ColliderPaths:
+  - m_Collider: {fileID: 95843057}
+    m_ColliderPaths:
+    - - X: 179999707
+        Y: -140000000
+      - X: 179999707
+        Y: 170000000
+      - X: -310000000
+        Y: 169999707
+      - X: -309999707
+        Y: -140000000
+  m_CompositePaths:
+    m_Paths:
+    - - {x: 17.99994, y: -14}
+      - {x: 17.99994, y: 17}
+      - {x: -31, y: 16.99994}
+      - {x: -30.999943, y: -14}
+  m_VertexDistance: 0.0005
+  m_OffsetDistance: 0.00005
+--- !u!50 &95843059
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 95843053}
+  m_BodyType: 2
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 1
+  m_Material: {fileID: 0}
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0
 --- !u!1 &588994108
 GameObject:
   m_ObjectHideFlags: 0
@@ -44682,6 +44768,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 5
+  encounterPercent: 10
   collisionLayer:
     serializedVersion: 2
     m_Bits: 256

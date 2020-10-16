@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,6 +7,8 @@ public class PlayerController : MonoBehaviour
 {
     [SerializeField]
     private float speed = 10;
+    [SerializeField]
+    private float encounterPercent = 10;
 
     [SerializeField]
     private LayerMask collisionLayer;
@@ -66,9 +69,23 @@ public class PlayerController : MonoBehaviour
             transform.position = Vector3.MoveTowards(transform.position, targetPos, speed * Time.deltaTime);
             yield return null;
         }
-        // close to tiny value, set exact
+        // close to the tiny value, set exact
         transform.position = targetPos;
         isMoving = false; //finished moving
+        //check the BOOSH
+        CheckForEncounter();
+    }
+
+    private void CheckForEncounter()
+    {
+        //check for boosh
+        if (Physics2D.OverlapCircle(transform.position, 0.2f, bushLayer) != null)
+        {
+            if (UnityEngine.Random.Range(1, 101) <= encounterPercent)
+            {
+                BattleTransition();
+            }
+        }
     }
 
     private bool DestinationCollides(Vector3 targetPos)
@@ -80,4 +97,10 @@ public class PlayerController : MonoBehaviour
         }
         return false;
     }
+
+    private void BattleTransition()
+    {
+        Debug.Log("Battle");
+    }
+
 }
