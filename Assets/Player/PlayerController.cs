@@ -85,6 +85,7 @@ public class PlayerController : MonoBehaviour
         {
             if (UnityEngine.Random.Range(1, 101) <= encounterPercent)
             {
+                //Debug.Log("Encounter: ");
                 animator.SetBool("isMoving", false);
                 OnEncountered();
             }
