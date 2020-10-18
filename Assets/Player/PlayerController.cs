@@ -15,6 +15,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     private LayerMask bushLayer;
 
+    public event Action OnEncountered;
+
     private bool isMoving;
 
     private Animator animator;
@@ -25,7 +27,7 @@ public class PlayerController : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    public void HandleUpdate()
     {
         //If the player isn't moving, get input
         if (!isMoving)
@@ -83,7 +85,8 @@ public class PlayerController : MonoBehaviour
         {
             if (UnityEngine.Random.Range(1, 101) <= encounterPercent)
             {
-                BattleTransition();
+                animator.SetBool("isMoving", false);
+                OnEncountered();
             }
         }
     }
@@ -98,9 +101,6 @@ public class PlayerController : MonoBehaviour
         return false;
     }
 
-    private void BattleTransition()
-    {
-        Debug.Log("Battle");
-    }
+   
 
 }
