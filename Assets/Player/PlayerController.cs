@@ -95,7 +95,7 @@ public class PlayerController : MonoBehaviour
     private bool DestinationCollides(Vector3 targetPos)
     {
         //collision at target
-        if (Physics2D.OverlapCircle(targetPos, 0.2f, collisionLayer) != null)
+        if (Physics2D.OverlapCircle(targetPos, 0.1f, collisionLayer) != null)
         {
             return true;
         }
