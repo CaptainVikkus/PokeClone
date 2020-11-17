@@ -119,11 +119,18 @@ public class BattleSystem : MonoBehaviour
 
         enemyUnit.PlayHitAnimation();
 
-        var damageDetails = enemyUnit.Pokemon.TakeDamage(move, playerUnit.Pokemon);
-        yield return enemyHud.UpdateHP();
-        yield return ShowDamageDetails(damageDetails);
+        if (move.Base.Category == MoveBase.MoveCategory.Status)
+        {
+            CauseStatusEffect(move, playerUnit, enemyUnit);
+        }
+        else
+        {
+            var damageDetails = enemyUnit.Pokemon.TakeDamage(move, playerUnit.Pokemon);
+            yield return enemyHud.UpdateHP();
+            yield return ShowDamageDetails(damageDetails);
+        }
 
-        if (damageDetails.Fainted)
+        if (playerUnit.Pokemon.HP <= 0)
         {
             yield return dialogBox.TypeDialog($"{enemyUnit.Pokemon.Base.Name} Fainted!!");
             enemyUnit.PlayFaintAnimation();
@@ -149,11 +156,18 @@ public class BattleSystem : MonoBehaviour
 
         playerUnit.PlayHitAnimation();
 
-        var damageDetails = playerUnit.Pokemon.TakeDamage(move, enemyUnit.Pokemon);
-        yield return playerHud.UpdateHP();
-        yield return ShowDamageDetails(damageDetails);
+        if (move.Base.Category == MoveBase.MoveCategory.Status)
+        {
+            CauseStatusEffect(move, enemyUnit, playerUnit);
+        }
+        else
+        {
+            var damageDetails = playerUnit.Pokemon.TakeDamage(move, enemyUnit.Pokemon);
+            yield return playerHud.UpdateHP();
+            yield return ShowDamageDetails(damageDetails);
+        }
 
-        if (damageDetails.Fainted)
+        if (playerUnit.Pokemon.HP <= 0)
         {
             yield return dialogBox.TypeDialog($"{playerUnit.Pokemon.Base.Name} Fainted!!");
             playerUnit.PlayFaintAnimation();
@@ -213,6 +227,21 @@ public class BattleSystem : MonoBehaviour
             {
                 // Run
                 OnBattleOver(false);
+            }
+        }
+    }
+
+    void CauseStatusEffect(Move move, BattleUnit source, BattleUnit target = null)
+    {
+        if (move.Base.Effects.Boosts != null)
+        {
+            if(move.Base.Target == MoveBase.MoveTarget.Self)
+            {
+                source.Pokemon.ApplyStatus(move.Base.Effects.Boosts);
+            }
+            else
+            {
+                target.Pokemon.ApplyStatus(move.Base.Effects.Boosts);
             }
         }
     }

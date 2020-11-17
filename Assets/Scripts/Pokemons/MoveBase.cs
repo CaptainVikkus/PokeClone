@@ -14,6 +14,9 @@ public class MoveBase : ScriptableObject
     [SerializeField] int power;
     [SerializeField] int accuracy;
     [SerializeField] int pp;
+    [SerializeField] MoveCategory category;
+    [SerializeField] MoveTarget target;
+    [SerializeField] MoveEffects effects;
 
     public string Name {
         get { return name; }
@@ -32,5 +35,48 @@ public class MoveBase : ScriptableObject
     }
     public int PP  {
         get { return pp; }
+    }
+    public MoveCategory Category
+    {
+        get { return category; }
+    }
+    public MoveTarget Target
+    {
+        get { return target; }
+    }
+    public MoveEffects Effects
+    {
+        get { return effects; }
+    }
+
+    [System.Serializable]
+    public class MoveEffects
+    {
+        [SerializeField] List<StatBoost> statBoosts;
+
+        public List<StatBoost> Boosts
+        {
+            get { return statBoosts; }
+        }
+    }
+
+    [System.Serializable]
+    public class StatBoost
+    {
+        public PokemonStat stat;
+        public int boost;
+    }
+
+    public enum MoveCategory
+    {
+        Physical,
+        Special,
+        Status,
+    }
+
+    public enum MoveTarget
+    {
+        Enemy,
+        Self,
     }
 }
