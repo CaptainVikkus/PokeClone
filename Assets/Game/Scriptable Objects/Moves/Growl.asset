@@ -19,6 +19,8 @@ MonoBehaviour:
   accuracy: 100
   pp: 40
   category: 2
-  target: 0
+  target: 1
   effects:
-    statBoosts: []
+    statBoosts:
+    - stat: 0
+      boost: -1
