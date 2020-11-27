@@ -135,6 +135,24 @@ public class Pokemon
         int r = Random.Range(0, Moves.Count);
         return Moves[r];
     }
+
+    public Move GetAIMove(Pokemon target, int depth = 0)
+    {
+        //Test random Move
+        int r = Random.Range(0, Moves.Count);
+        if (TypeChart.GetEffectiveness(Moves[r].Base.Type, target.Base.Type1) >= 1.0f)
+        {
+            return Moves[r]; // Move is Effective
+        }
+        else if (depth > 4)
+        {
+            return Moves[r]; // Take it or leave it
+        }
+        else
+        {
+            return GetAIMove(target, ++depth); // Try Again
+        }
+    }
 }
 
 public class DamageDetails

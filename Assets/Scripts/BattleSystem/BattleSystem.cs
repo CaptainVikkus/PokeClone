@@ -148,7 +148,7 @@ public class BattleSystem : MonoBehaviour
     {
         state = BattleState.EnemyMove;
 
-        var move = enemyUnit.Pokemon.GetRandomMove();
+        var move = enemyUnit.Pokemon.GetAIMove(playerUnit.Pokemon);
         yield return dialogBox.TypeDialog($"{enemyUnit.Pokemon.Base.Name} used {move.Base.Name}!!");
 
         enemyUnit.PlayAttackAnimation();
