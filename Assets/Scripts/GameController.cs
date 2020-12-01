@@ -17,6 +17,8 @@ public class GameController : MonoBehaviour
     {
         playerController.OnEncountered += StartBattle;
         battleSystem.OnBattleOver += EndBattle;
+
+        audioSystem.FadeTrack(AudioManager.Track.Town);
     }
 
     void StartBattle()
