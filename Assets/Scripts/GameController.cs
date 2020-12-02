@@ -9,6 +9,7 @@ public class GameController : MonoBehaviour
 {
     [SerializeField] PlayerController playerController;
     [SerializeField] BattleSystem battleSystem;
+    [SerializeField] AudioManager audioSystem;
     [SerializeField] Camera worldCamera;
 
     public UnityEvent onEnterEncounter;
@@ -21,6 +22,8 @@ public class GameController : MonoBehaviour
         
         playerController.OnEncountered += StartBattle;
         battleSystem.OnBattleOver += EndBattle;
+
+        audioSystem.FadeTrack(AudioManager.Track.Town);
     }
 
     void StartBattle()
@@ -29,8 +32,8 @@ public class GameController : MonoBehaviour
         state = GameState.Battle;
         battleSystem.gameObject.SetActive(true);
         worldCamera.gameObject.SetActive(false);
-
         battleSystem.StartBattle();
+        audioSystem.FadeTrack(AudioManager.Track.Battle);
     }
 
     void EndBattle(bool won)
@@ -39,6 +42,7 @@ public class GameController : MonoBehaviour
         state = GameState.FreeRoam;
         battleSystem.gameObject.SetActive(false);
         worldCamera.gameObject.SetActive(true);
+        audioSystem.FadeTrack(AudioManager.Track.Town);
     }
 
     private void Update()

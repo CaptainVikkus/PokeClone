@@ -136,36 +136,22 @@ public class Pokemon
         return Moves[r];
     }
 
-    public Move SelectMove(Pokemon target)
+    public Move GetAIMove(Pokemon target, int depth = 0)
     {
-        // First set up the local variables for use here
-        float bestScore = 0;
-        int moveIndex = 0;
-
-        // Go through each move to find the best selection for this target (with some random value added to prevent alot of repeating)
-        for (int i = 0; i < Moves.Count; i++)
+        //Test random Move
+        int r = Random.Range(0, Moves.Count);
+        if (TypeChart.GetEffectiveness(Moves[r].Base.Type, target.Base.Type1) >= 1.0f)
         {
-            // This is the score that will be used to hold how 'good' a move is against the target
-            float score = 0;
-            var move = Moves[i];
-
-            // Will the move be effective against the target
-            score += move.Base.Power * TypeChart.GetEffectiveness(move.Base.Type, target.Base.Type1) * TypeChart.GetEffectiveness(move.Base.Type, target.Base.Type2);
-
-            // Will the move hit the target
-            score += move.Base.Accuracy;
-
-            // Add also add in some randomness to the score to allow other moves to be used
-            score = Random.Range(score * 0.9f, score * 1.1f);
-
-            if (score > bestScore)
-            {
-                bestScore = score;
-                moveIndex = i;
-            }
+            return Moves[r]; // Move is Effective
         }
-
-        return Moves[moveIndex];
+        else if (depth > 4)
+        {
+            return Moves[r]; // Take it or leave it
+        }
+        else
+        {
+            return GetAIMove(target, ++depth); // Try Again
+        }
     }
 }
 

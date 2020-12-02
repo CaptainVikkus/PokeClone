@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public enum BattleState { Start, PlayerAction, PlayerMove, EnemyMove, Busy}
@@ -147,7 +148,7 @@ public class BattleSystem : MonoBehaviour
     {
         state = BattleState.EnemyMove;
 
-        var move = enemyUnit.Pokemon.SelectMove(playerUnit.Pokemon);
+        var move = enemyUnit.Pokemon.GetAIMove(playerUnit.Pokemon);
         yield return dialogBox.TypeDialog($"{enemyUnit.Pokemon.Base.Name} used {move.Base.Name}!!");
 
         enemyUnit.PlayAttackAnimation();
