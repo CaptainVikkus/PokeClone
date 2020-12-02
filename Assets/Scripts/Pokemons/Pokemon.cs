@@ -135,6 +135,38 @@ public class Pokemon
         int r = Random.Range(0, Moves.Count);
         return Moves[r];
     }
+
+    public Move SelectMove(Pokemon target)
+    {
+        // First set up the local variables for use here
+        float bestScore = 0;
+        int moveIndex = 0;
+
+        // Go through each move to find the best selection for this target (with some random value added to prevent alot of repeating)
+        for (int i = 0; i < Moves.Count; i++)
+        {
+            // This is the score that will be used to hold how 'good' a move is against the target
+            float score = 0;
+            var move = Moves[i];
+
+            // Will the move be effective against the target
+            score += move.Base.Power * TypeChart.GetEffectiveness(move.Base.Type, target.Base.Type1) * TypeChart.GetEffectiveness(move.Base.Type, target.Base.Type2);
+
+            // Will the move hit the target
+            score += move.Base.Accuracy;
+
+            // Add also add in some randomness to the score to allow other moves to be used
+            score = Random.Range(score * 0.9f, score * 1.1f);
+
+            if (score > bestScore)
+            {
+                bestScore = score;
+                moveIndex = i;
+            }
+        }
+
+        return Moves[moveIndex];
+    }
 }
 
 public class DamageDetails
