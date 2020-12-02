@@ -10,6 +10,7 @@ public class GameController : MonoBehaviour
     [SerializeField] PlayerController playerController;
     [SerializeField] BattleSystem battleSystem;
     [SerializeField] AudioManager audioSystem;
+    [SerializeField] ScreenOverlayManager overlayManager;
     [SerializeField] Camera worldCamera;
 
     public UnityEvent onEnterEncounter;
