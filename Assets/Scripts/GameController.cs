@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 
-public enum GameState { FreeRoam, Battle }
+public enum GameState { FreeRoam, Battle, Dialog }
 public class GameController : MonoBehaviour
 {
     [SerializeField] PlayerController playerController;
@@ -86,14 +86,28 @@ public class GameController : MonoBehaviour
         }
     }
 
-
+    private void Update()
+    {
+        switch (state)
+        {
+            case (GameState.FreeRoam):
+                playerController.HandleUpdate();
+            break;
+            case (GameState.Dialog):
+            break;
+            case (GameState.Battle):
+                battleSystem.HandleUpdate();
+            break;
+            
+        };
+    }
     void StartBattle()
     {
         targetPlayerLocation = playerController.gameObject.transform.position;
         onEnterEncounter.Invoke();
-        state = GameState.Battle;
+        state = GameState.Dialog;
         audioManager.FadeTrack(AudioManager.Track.Battle);
-        SceneManager.LoadScene("BattleSystem");
+        StartCoroutine(EnterEncounter());
     }
 
     void EndBattle(bool won)
@@ -104,17 +118,10 @@ public class GameController : MonoBehaviour
         SceneManager.LoadScene("Town");
     }
 
-    private void Update()
+    IEnumerator EnterEncounter()
     {
-        switch (state)
-        {
-            case (GameState.FreeRoam):
-                playerController.HandleUpdate();
-            break;
-            case (GameState.Battle):
-                battleSystem.HandleUpdate();
-            break;
-            
-        };
+        yield return new WaitForSeconds(2.0f);
+        state = GameState.Battle;
+        SceneManager.LoadScene("BattleSystem");
     }
 }

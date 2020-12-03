@@ -45,7 +45,7 @@ public class ScreenOverlayManager : MonoBehaviour
 
     void OnEnterCombat()
     {
-        overlayAnimator.Play("FadeFromBlack");
+        overlayAnimator.Play("FadeToBlack");
     }
 
     void OnExitCombat()
