@@ -5,15 +5,12 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    [SerializeField]
-    private float speed = 10;
-    [SerializeField]
-    private float encounterPercent = 10;
+    [SerializeField] private float speed = 10;
+    [SerializeField] private float encounterPercent = 10;
 
-    [SerializeField]
-    private LayerMask collisionLayer;
-    [SerializeField]
-    private LayerMask bushLayer;
+    [SerializeField] private LayerMask collisionLayer;
+    [SerializeField] private LayerMask bushLayer;
+    [SerializeField] private LayerMask portalLayer;
 
     public event Action OnEncountered;
 
@@ -76,6 +73,7 @@ public class PlayerController : MonoBehaviour
         isMoving = false; //finished moving
         //check the BOOSH
         CheckForEncounter();
+        CheckForDoor();
     }
 
     private void CheckForEncounter()
@@ -89,6 +87,15 @@ public class PlayerController : MonoBehaviour
                 animator.SetBool("isMoving", false);
                 OnEncountered();
             }
+        }
+    }
+
+    private void CheckForDoor()
+    {
+        var door = Physics2D.OverlapCircle(transform.position, 0.2f, portalLayer);
+        if (door != null)
+        {
+            door.GetComponent<SceneTransition>().LoadScene();
         }
     }
 

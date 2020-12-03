@@ -6,13 +6,12 @@ using UnityEngine.SceneManagement;
 public class SceneTransition : MonoBehaviour
 {
     public string targetScene;
+    public AudioManager.Track newSong;
 
     // Update is called once per frame
-    private void OnTriggerEnter2D(Collider2D collision)
+    public void LoadScene()
     {
-        if (collision.gameObject.CompareTag("Player") && targetScene != null)
-        {
-            SceneManager.LoadScene(targetScene);
-        }
+        AudioManager.Instance.FadeTrack(newSong);
+        SceneManager.LoadScene(targetScene);
     }
 }

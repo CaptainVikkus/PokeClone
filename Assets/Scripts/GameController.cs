@@ -58,10 +58,20 @@ public class GameController : MonoBehaviour
     {
         SetManagers();
 
-        if (playerController != null & targetPlayerLocation != Vector3.zero)
+        if (playerController != null)
         {
-            playerController.gameObject.transform.position = targetPlayerLocation;
-            targetPlayerLocation = Vector3.zero;
+            if (targetPlayerLocation != Vector3.zero)
+            {
+                playerController.gameObject.transform.position = targetPlayerLocation;
+                targetPlayerLocation = Vector3.zero;
+            }
+        }
+        else if (battleSystem != null)
+        {
+        }
+        else
+        {
+            state = GameState.Dialog;
         }
     }
 
