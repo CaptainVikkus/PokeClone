@@ -20,10 +20,35 @@ public class AudioManager : MonoBehaviour
         Explore
     }
 
+    private AudioManager() { }
+    private static AudioManager instance;
+    public static AudioManager Instance
+    {
+        get
+        {
+            if (instance == null)
+            {
+                instance = FindObjectOfType<AudioManager>();
+            }
+            return instance;
+        }
+
+        private set { }
+    }
+
     // Start is called before the first frame update
     void Start()
     {
+        AudioManager[] audioManagers = FindObjectsOfType<AudioManager>();
+        foreach (AudioManager mgr in audioManagers)
+        {
+            if (mgr != Instance)
+            {
+                Destroy(mgr.gameObject);
+            }
+        }
 
+        DontDestroyOnLoad(transform.root);
     }
 
     /// <summary>

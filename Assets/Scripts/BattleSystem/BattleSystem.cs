@@ -130,7 +130,7 @@ public class BattleSystem : MonoBehaviour
             yield return ShowDamageDetails(damageDetails);
         }
 
-        if (playerUnit.Pokemon.HP <= 0)
+        if (enemyUnit.Pokemon.HP <= 0)
         {
             yield return dialogBox.TypeDialog($"{enemyUnit.Pokemon.Base.Name} Fainted!!");
             enemyUnit.PlayFaintAnimation();

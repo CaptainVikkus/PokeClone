@@ -34,12 +34,11 @@ public class ScreenOverlayManager : MonoBehaviour
             }
         }
 
-        DontDestroyOnLoad(transform.root);
+        DontDestroyOnLoad(transform.root.gameObject);
 
         //subscribe to encounter events
-        var gameController = FindObjectOfType<GameController>();
-        gameController.onEnterEncounter.AddListener(OnEnterCombat);
-        gameController.onExitEncounter.AddListener(OnExitCombat);
+        GameController.Instance.onEnterEncounter.AddListener(OnEnterCombat);
+        GameController.Instance.onExitEncounter.AddListener(OnExitCombat);
 
         SceneManager.sceneLoaded += OnEnterNewScene;
     }
@@ -51,7 +50,7 @@ public class ScreenOverlayManager : MonoBehaviour
 
     void OnExitCombat()
     {
-        //overlayAnimator.Play("FadeToBlack");
+        overlayAnimator.Play("FadeToBlack");
     }
 
     void OnEnterNewScene(Scene newScene, LoadSceneMode mode)
