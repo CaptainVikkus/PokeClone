@@ -12,6 +12,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private LayerMask bushLayer;
     [SerializeField] private LayerMask portalLayer;
 
+    public static Pokemon pokemon;
+    [SerializeField] PokemonBase starterPokemon;
+
     public event Action OnEncountered;
 
     private bool isMoving;
@@ -21,6 +24,14 @@ public class PlayerController : MonoBehaviour
     private void Awake()
     {
         animator = GetComponent<Animator>();
+    }
+
+    public void Start()
+    {
+        if (pokemon == null)
+        {
+            pokemon = new Pokemon(starterPokemon, 5);
+        }
     }
 
     // Update is called once per frame

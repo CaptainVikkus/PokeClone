@@ -547,6 +547,15 @@ Tilemap:
       m_TileColorIndex: 0
       m_TileObjectToInstantiateIndex: 65535
       m_AllTileFlags: 1073741825
+  - first: {x: -8, y: 8, z: 0}
+    second:
+      serializedVersion: 2
+      m_TileIndex: 23
+      m_TileSpriteIndex: 23
+      m_TileMatrixIndex: 0
+      m_TileColorIndex: 0
+      m_TileObjectToInstantiateIndex: 65535
+      m_AllTileFlags: 1073741825
   - first: {x: -8, y: 12, z: 0}
     second:
       serializedVersion: 2
@@ -640,6 +649,8 @@ Tilemap:
     m_Data: {fileID: 11400000, guid: dfe962d7d9993c441b79160bbec3e588, type: 2}
   - m_RefCount: 1
     m_Data: {fileID: 11400000, guid: 95c3a4030b9207d4b8f551fcd1c194d4, type: 2}
+  - m_RefCount: 1
+    m_Data: {fileID: 11400000, guid: 2c07eea5c97a1224ea91a33c10e3b19f, type: 2}
   m_TileSpriteArray:
   - m_RefCount: 1
     m_Data: {fileID: 2331842429375023471, guid: d3afde254157ba744a1c1cd9ecd33500, type: 3}
@@ -687,8 +698,10 @@ Tilemap:
     m_Data: {fileID: 1242996465418633367, guid: d3afde254157ba744a1c1cd9ecd33500, type: 3}
   - m_RefCount: 1
     m_Data: {fileID: -3371896872818193155, guid: d3afde254157ba744a1c1cd9ecd33500, type: 3}
+  - m_RefCount: 1
+    m_Data: {fileID: 4020740420307960919, guid: d3afde254157ba744a1c1cd9ecd33500, type: 3}
   m_TileMatrixArray:
-  - m_RefCount: 33
+  - m_RefCount: 34
     m_Data:
       e00: 1
       e01: 0
@@ -707,7 +720,7 @@ Tilemap:
       e32: 0
       e33: 1
   m_TileColorArray:
-  - m_RefCount: 33
+  - m_RefCount: 34
     m_Data: {r: 1, g: 1, b: 1, a: 1}
   m_TileObjectToInstantiateArray: []
   m_AnimationFrameRate: 1
@@ -46714,8 +46727,8 @@ GameObject:
   - component: {fileID: 1288061229}
   - component: {fileID: 1288061228}
   - component: {fileID: 1288061232}
-  - component: {fileID: 1288061227}
   - component: {fileID: 1288061230}
+  - component: {fileID: 1288061227}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -46746,6 +46759,7 @@ MonoBehaviour:
   portalLayer:
     serializedVersion: 2
     m_Bits: 1024
+  starterPokemon: {fileID: 11400000, guid: 9b88e14c0d1cf5d4b9a747da5719326b, type: 2}
 --- !u!212 &1288061228
 SpriteRenderer:
   m_ObjectHideFlags: 0

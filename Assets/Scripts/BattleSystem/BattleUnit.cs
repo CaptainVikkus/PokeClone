@@ -27,9 +27,14 @@ public class BattleUnit : MonoBehaviour
     {
         Pokemon = new Pokemon(_base, level);
         if (isPlayerUnit)
+        {
+            Pokemon = PlayerController.pokemon;
             image.sprite = Pokemon.Base.BackSprite;
+        }
         else
+        {
             image.sprite = Pokemon.Base.FrontSprite;
+        }
 
         image.color = orginalColor;
        
