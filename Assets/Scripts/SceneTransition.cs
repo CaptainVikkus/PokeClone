@@ -11,6 +11,7 @@ public class SceneTransition : MonoBehaviour
     // Update is called once per frame
     public void LoadScene()
     {
+        ScreenOverlayManager.Instance.FadeOut();
         AudioManager.Instance.FadeTrack(newSong);
         SceneManager.LoadScene(targetScene);
     }

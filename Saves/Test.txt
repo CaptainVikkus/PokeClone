@@ -1,0 +1,1 @@
+{"pokemonBaseName":"Squirtle","lvl":5,"hp":12}

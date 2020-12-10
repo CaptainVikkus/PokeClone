@@ -83,7 +83,7 @@ public class GameController : MonoBehaviour
         battleSystem = FindObjectOfType<BattleSystem>();
         if (battleSystem != null) 
         {
-            Debug.Log("Battle Loaded");
+            Debug.Log("Battle Mode");
             battleSystem.OnBattleOver += EndBattle;
             battleSystem.StartBattle();
         }
@@ -91,7 +91,7 @@ public class GameController : MonoBehaviour
         playerController = FindObjectOfType<PlayerController>();
         if (playerController != null) 
         {
-            Debug.Log("Player Loaded");
+            Debug.Log("Adventure Mode");
             playerController.OnEncountered += StartBattle;
         }
     }

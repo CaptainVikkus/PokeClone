@@ -26,7 +26,7 @@ public class ScreenOverlayManager : MonoBehaviour
     void Start()
     {
         ScreenOverlayManager[] screenOverlayManagers = FindObjectsOfType<ScreenOverlayManager>();
-        foreach(ScreenOverlayManager mgr in screenOverlayManagers)
+        foreach (ScreenOverlayManager mgr in screenOverlayManagers)
         {
             if (mgr != Instance)
             {
@@ -41,6 +41,7 @@ public class ScreenOverlayManager : MonoBehaviour
         GameController.Instance.onExitEncounter.AddListener(OnExitCombat);
 
         SceneManager.sceneLoaded += OnEnterNewScene;
+        SceneManager.sceneUnloaded += OnExitScene;
     }
 
     void OnEnterCombat()
@@ -56,5 +57,19 @@ public class ScreenOverlayManager : MonoBehaviour
     void OnEnterNewScene(Scene newScene, LoadSceneMode mode)
     {
         overlayAnimator.Play("FadeFromBlack");
+    }
+
+    void OnExitScene(Scene scene)
+    {
+        //overlayAnimator.Play("FadeToBlack");
+    }
+
+    public void FadeIn()
+    {
+        overlayAnimator.Play("FadeFromBlack");
+    }
+    public void FadeOut()
+    {
+        overlayAnimator.Play("FadeToBlack");
     }
 }

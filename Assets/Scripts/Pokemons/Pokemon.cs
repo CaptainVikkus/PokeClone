@@ -153,6 +153,29 @@ public class Pokemon
             return GetAIMove(target, ++depth); // Try Again
         }
     }
+
+    /** SAVING **/
+    public static string CreatePokemonString(Pokemon pokemon)
+    {
+        var pokeSave = new SavePokemon();
+        pokeSave.pokemonBaseName = pokemon.Base.name;
+        pokeSave.lvl = pokemon.Level;
+        pokeSave.hp = pokemon.HP;
+        string strMon = JsonUtility.ToJson(pokeSave);
+
+        return strMon;
+    }
+
+    public static Pokemon ReadPokemonString(string strMon)
+    {
+        var pokeSave = JsonUtility.FromJson<SavePokemon>(strMon); //Load SavePokemon
+        var baseMon = PokemonBase.ReadBaseMonString(pokeSave.pokemonBaseName); //Load PokemonBase SO
+        var pokemon = new Pokemon(baseMon, pokeSave.lvl); //Build Pokemon
+        pokemon.HP = pokeSave.hp;
+
+        return pokemon;
+    }
+
 }
 
 public class DamageDetails

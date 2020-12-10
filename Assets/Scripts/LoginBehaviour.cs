@@ -25,6 +25,8 @@ public class LoginBehaviour : MonoBehaviour
         if (LoginFieldText.text != "")
         {
             Debug.Log("Username Received: " + LoginFieldText.textComponent.GetParsedText());
+            //Load Player and Pokemon if available
+            SaveSystem.LoadPlayer(LoginFieldText.text);
             SceneManager.LoadScene("Town");
         }
     }

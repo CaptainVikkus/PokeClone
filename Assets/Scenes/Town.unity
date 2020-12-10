@@ -4147,7 +4147,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 630092956}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1081858217}
+        m_TargetAssemblyTypeName: MenuController, Assembly-CSharp
+        m_MethodName: SaveGame
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &630092956
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -47302,6 +47314,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   menuButton: {fileID: 972413799}
   mainMenu: {fileID: 1682786538}
+  player: {fileID: 1288061227}
 --- !u!1 &1094312257
 GameObject:
   m_ObjectHideFlags: 0
@@ -47412,7 +47425,7 @@ MonoBehaviour:
   portalLayer:
     serializedVersion: 2
     m_Bits: 1024
-  starterPokemon: {fileID: 11400000, guid: 9b88e14c0d1cf5d4b9a747da5719326b, type: 2}
+  starterPokemon: {fileID: 11400000, guid: 5b746ee15c527d74791003588c22d652, type: 2}
 --- !u!212 &1288061228
 SpriteRenderer:
   m_ObjectHideFlags: 0

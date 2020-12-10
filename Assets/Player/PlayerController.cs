@@ -32,6 +32,11 @@ public class PlayerController : MonoBehaviour
         {
             pokemon = new Pokemon(starterPokemon, 5);
         }
+        if (SaveSystem.currentPlayer == null || SaveSystem.currentPlayer == "")
+        {
+            SaveSystem.currentPlayer = "Test";
+        }
+        Debug.Log("Player " + SaveSystem.currentPlayer + " Loaded " + pokemon.Base.name);
     }
 
     // Update is called once per frame
