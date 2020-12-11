@@ -30,4 +30,10 @@ public class LoginBehaviour : MonoBehaviour
             SceneManager.LoadScene("Town");
         }
     }
+
+    public void PickStarter(string pokeName)
+    {
+        PokemonBase _base = PokemonBase.ReadBaseMonString(pokeName);
+        SaveSystem.startPokemon = new Pokemon(_base, 5);
+    }
 }
