@@ -20,6 +20,7 @@ public class PlayerController : MonoBehaviour
     private bool isMoving;
 
     private Animator animator;
+    public MenuController UI;
 
     private void Awake()
     {
@@ -37,6 +38,9 @@ public class PlayerController : MonoBehaviour
             SaveSystem.currentPlayer = "Test";
         }
         Debug.Log("Player " + SaveSystem.currentPlayer + " Loaded " + pokemon.Base.name);
+
+        //Update the UI
+        UI.UpdateUI();
     }
 
     // Update is called once per frame

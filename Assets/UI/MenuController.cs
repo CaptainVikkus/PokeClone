@@ -1,12 +1,30 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MenuController : MonoBehaviour
 {
     public Animator menuButton;
     public GameObject mainMenu;
     public PlayerController player;
+    public Image pokeSprite;
+    public TextMeshProUGUI lvl;
+    public RectTransform health;
+    private int healthMax = 47;
+
+
+    public void UpdateUI()
+    {
+        //Set Pokemon sprite to current pokemon
+        pokeSprite.sprite = PlayerController.pokemon.Base.FrontSprite;
+        float calcHp = PlayerController.pokemon.HP / (float)PlayerController.pokemon.MaxHp;
+        //Set healthbar to current pokemon health
+        health.localScale = new Vector3(calcHp, 1.0f);
+        //Set level to pokemone level
+        lvl.SetText(PlayerController.pokemon.Level.ToString());
+    }
 
     public void ToggleMenu()
     {
