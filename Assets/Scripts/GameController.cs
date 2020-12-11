@@ -52,9 +52,11 @@ public class GameController : MonoBehaviour
         SetManagers();
 
         audioManager.FadeTrack(AudioManager.Track.Town);
+
+        SceneManager.sceneLoaded += OnLevelLoaded;
     }
 
-    private void OnLevelWasLoaded(int level)
+    private void OnLevelLoaded(Scene scene, LoadSceneMode load)
     {
         SetManagers();
 
