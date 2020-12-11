@@ -37,18 +37,21 @@ public class GameController : MonoBehaviour
         private set { }
     }
 
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(this.gameObject);
+            return;
+        }
+
+        Instance = this;
+        DontDestroyOnLoad(this.gameObject);
+    }
+
     private void Start()
     {
-        GameController[] gameControllers = FindObjectsOfType<GameController>();
-        foreach (GameController mgr in gameControllers)
-        {
-            if (mgr != Instance)
-            {
-                Destroy(mgr.gameObject);
-            }
-        }
-        DontDestroyOnLoad(transform.root);
-
+        //Find Managers
         SetManagers();
 
         audioManager.FadeTrack(AudioManager.Track.Town);

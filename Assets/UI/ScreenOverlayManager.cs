@@ -22,20 +22,22 @@ public class ScreenOverlayManager : MonoBehaviour
 
         private set { }
     }
+
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(this.gameObject);
+            return;
+        }
+
+        Instance = this;
+        DontDestroyOnLoad(this.gameObject);
+    }
+
     // Start is called before the first frame update
     void Start()
     {
-        ScreenOverlayManager[] screenOverlayManagers = FindObjectsOfType<ScreenOverlayManager>();
-        foreach (ScreenOverlayManager mgr in screenOverlayManagers)
-        {
-            if (mgr != Instance)
-            {
-                Destroy(mgr.gameObject);
-            }
-        }
-
-        DontDestroyOnLoad(transform.root.gameObject);
-
         //subscribe to encounter events
         GameController.Instance.onEnterEncounter.AddListener(OnEnterCombat);
         GameController.Instance.onExitEncounter.AddListener(OnExitCombat);
