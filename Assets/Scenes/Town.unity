@@ -47946,7 +47946,7 @@ MonoBehaviour:
   portalLayer:
     serializedVersion: 2
     m_Bits: 1024
-  starterPokemon: {fileID: 11400000, guid: 9b88e14c0d1cf5d4b9a747da5719326b, type: 2}
+  starterPokemon: {fileID: 11400000, guid: 5b746ee15c527d74791003588c22d652, type: 2}
   UI: {fileID: 1081858217}
 --- !u!212 &1288061228
 SpriteRenderer:
