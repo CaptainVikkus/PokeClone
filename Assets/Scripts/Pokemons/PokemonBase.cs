@@ -166,4 +166,17 @@ public static class PokemonBaseList
     {
         return baseList[UnityEngine.Random.Range(0, baseList.Length)];
     }
+
+    public static PokemonBase GetPokemonBase(string MonName)
+    {
+        foreach(var pokemonBase in baseList)
+        {
+            if (pokemonBase.Name == MonName)
+            {
+                return pokemonBase;
+            }
+        }
+
+        return null;
+    }
 }
