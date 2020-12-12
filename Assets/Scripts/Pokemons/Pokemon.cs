@@ -52,7 +52,7 @@ public class Pokemon
         Stats.Add(PokemonStat.SpcDefense, Mathf.FloorToInt((Base.SpDefense * Level) / 100.0f) + 5);
         Stats.Add(PokemonStat.Speed, Mathf.FloorToInt((Base.Speed * Level) / 100.0f) + 5);
 
-        MaxHp = (Base.MaxHP * Level) + 10;
+        MaxHp = Mathf.FloorToInt((Base.MaxHP * Level) / 100.0f) + 10;
     }
 
     int GetStat(PokemonStat stat)
