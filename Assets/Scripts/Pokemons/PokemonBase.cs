@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEditor;
 
 [CreateAssetMenu(fileName = "Pokemon", menuName = "Pokemon/Create new pokemon")]
 public class PokemonBase : ScriptableObject
@@ -56,17 +54,10 @@ public class PokemonBase : ScriptableObject
     //Takes in a string of 
     public static PokemonBase ReadBaseMonString(string baseMonName)
     {
-        string[] assets = AssetDatabase.FindAssets(baseMonName);
-        //Debug.Log("Asset found: " + assets[0]);
-        var path = AssetDatabase.GUIDToAssetPath(assets[0]);
-        //Debug.Log("Looking for " + path);
-        if (path != "")
-        {
-            PokemonBase pokemonBase = AssetDatabase.LoadAssetAtPath<PokemonBase>(path);
-            //Debug.Log(pokemonBase.name + " loaded");
-            return pokemonBase;
-        }
-        return FindObjectOfType<PokemonBase>();
+        //Debug.Log(baseMonName);
+        PokemonBase baseMon = PokemonBaseList.GetPokemonBase(baseMonName);
+        if (baseMon == null) { return PokemonBaseList.getRandomPokemonBase(); }
+        return baseMon;
     }
 }
 
@@ -171,6 +162,7 @@ public static class PokemonBaseList
     {
         foreach(var pokemonBase in baseList)
         {
+            //Debug.Log(pokemonBase.name);
             if (pokemonBase.Name == MonName)
             {
                 return pokemonBase;
