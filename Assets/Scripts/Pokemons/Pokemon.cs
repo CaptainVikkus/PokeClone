@@ -180,6 +180,29 @@ public class Pokemon
         return pokemon;
     }
 
+    public static string CreatePokemonLambda(Pokemon pokemon)
+    {
+        var pokeSave = new LamdaPokemon();
+        pokeSave.Player = SaveSystem.currentPlayer;
+        pokeSave.Pokemon = pokemon.Base.name;
+        pokeSave.Level = pokemon.Level.ToString();
+        pokeSave.Health = pokemon.HP.ToString();
+        string strMon = JsonUtility.ToJson(pokeSave);
+
+        return strMon;
+    }
+
+    public static Pokemon ReadPokemonLambda(string strMon)
+    {
+        var pokesave = JsonUtility.FromJson<LamdaPokemon>(strMon);
+        var baseMon = PokemonBase.ReadBaseMonString(pokesave.Pokemon);
+        int lvl = int.Parse(pokesave.Level);
+        int hp = int.Parse(pokesave.Health);
+        var pokemon = new Pokemon(baseMon, lvl);
+        pokemon.HP = hp;
+
+        return pokemon;
+    }
 }
 
 public class DamageDetails

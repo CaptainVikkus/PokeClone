@@ -51,3 +51,12 @@ public class SavePokemon
     public int lvl;
     public int hp;
 }
+
+[System.Serializable]
+public class LamdaPokemon
+{
+    public string Player;
+    public string Pokemon;
+    public string Health;
+    public string Level;
+}
