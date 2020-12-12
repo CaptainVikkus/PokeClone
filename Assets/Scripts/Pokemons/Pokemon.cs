@@ -180,16 +180,15 @@ public class Pokemon
         return pokemon;
     }
 
-    public static string CreatePokemonLambda(Pokemon pokemon)
+    public static LamdaPokemon CreatePokemonLambda(Pokemon pokemon)
     {
         var pokeSave = new LamdaPokemon();
         pokeSave.Player = SaveSystem.currentPlayer;
         pokeSave.Pokemon = pokemon.Base.name;
         pokeSave.Level = pokemon.Level.ToString();
         pokeSave.Health = pokemon.HP.ToString();
-        string strMon = JsonUtility.ToJson(pokeSave);
 
-        return strMon;
+        return pokeSave;
     }
 
     public static Pokemon ReadPokemonLambda(string strMon)

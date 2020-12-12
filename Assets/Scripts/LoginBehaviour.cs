@@ -81,9 +81,9 @@ public class LoginBehaviour : MonoBehaviour
             { ///Existing Player Found
                 var pokeSave = Pokemon.ReadPokemonLambda(quest.downloadHandler.text);
                 SaveSystem.startPokemon = pokeSave;
-                PlayerController.pokemon = pokeSave;
             }
         }
+        PlayerController.pokemon = SaveSystem.startPokemon;
         getting = false;//GET finished
         SceneManager.LoadScene("Town");
     }

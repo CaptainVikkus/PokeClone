@@ -1,0 +1,1 @@
+{"pokemonBaseName":"Charmander","lvl":5,"hp":11}

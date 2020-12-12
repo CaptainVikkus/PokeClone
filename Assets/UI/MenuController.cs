@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Networking;
 
 public class MenuController : MonoBehaviour
 {
@@ -13,7 +14,7 @@ public class MenuController : MonoBehaviour
     public TextMeshProUGUI lvl;
     public RectTransform health;
     public RectTransform exp;
-
+    private bool getting;
 
     public void UpdateUI()
     {
@@ -44,6 +45,45 @@ public class MenuController : MonoBehaviour
         else
         {
             Debug.LogError("PlayerController not Assigned");
+        }
+    }
+
+    public void SaveGameOnline()
+    {
+        if (player != null)
+        {
+            //Build Url
+            var pokeSave = Pokemon.CreatePokemonLambda(PlayerController.pokemon);
+            string uri = "https://d8nwq2rco8.execute-api.us-east-2.amazonaws.com/default/savePlayerData/"
+                + "?Player=" + SaveSystem.currentPlayer
+                + "&Pokemon=" + pokeSave.Pokemon
+                + "&Health=" + pokeSave.Health
+                + "&Level=" + pokeSave.Level;
+            UnityWebRequest quest = UnityWebRequest.Get(uri);
+            if (!getting)
+            {
+                getting = true;//enforce only one GET running
+                StartCoroutine(SendSave(quest));
+            }
+
+            SaveSystem.SavePlayer(player);
+            //Debug.Log("Player Saved " + PlayerController.pokemon.Base.name);
+        }
+        else
+        {
+            Debug.LogError("PlayerController not Assigned");
+        }
+    }
+
+    IEnumerator SendSave(UnityWebRequest quest)
+    {
+        yield return quest.SendWebRequest();
+
+        if (quest.isNetworkError) { Debug.Log("Failed to load Server"); }
+        else
+        {
+            Debug.Log(quest.downloadHandler.text);
+
         }
     }
 }
