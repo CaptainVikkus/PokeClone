@@ -18,9 +18,15 @@ public class HealingStump : MonoBehaviour
 
     IEnumerator Heal(PlayerController player)
     {
+        foreach (var move in PlayerController.pokemon.Moves)
+        {
+            move.PP = move.Base.PP;
+        }
         while (PlayerController.pokemon.HP != PlayerController.pokemon.MaxHp)
         {
             PlayerController.pokemon.HP += healSpeed;
+            if (PlayerController.pokemon.HP > PlayerController.pokemon.MaxHp)
+            { PlayerController.pokemon.HP = PlayerController.pokemon.MaxHp; }
             player.UI.UpdateUI();
             yield return new WaitForSeconds(1);
         }
