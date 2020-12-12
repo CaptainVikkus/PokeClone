@@ -42,6 +42,14 @@ public class BattleUnit : MonoBehaviour
         PlayEnterAnimation();
     }
 
+    public void Setup(string PokemonName, int lvl, int hp)
+    {
+        Pokemon = new Pokemon(PokemonBaseList.GetPokemonBase(PokemonName), lvl);
+        image.sprite = Pokemon.Base.FrontSprite;
+        Pokemon.HP = hp;
+        PlayEnterAnimation();
+    }
+
     public void PlayEnterAnimation()
     {
         if (isPlayerUnit)
