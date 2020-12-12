@@ -38,4 +38,9 @@ public class LoginBehaviour : MonoBehaviour
         PokemonBase _base = PokemonBase.ReadBaseMonString(pokeName);
         SaveSystem.startPokemon = new Pokemon(_base, 5);
     }
+
+    public void QuitGame()
+    {
+        Application.Quit();
+    }
 }
