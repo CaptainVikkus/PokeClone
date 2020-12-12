@@ -80,3 +80,5 @@ public class MoveBase : ScriptableObject
         Self,
     }
 }
+
+

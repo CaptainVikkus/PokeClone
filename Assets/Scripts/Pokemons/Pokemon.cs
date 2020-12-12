@@ -6,9 +6,12 @@ public class Pokemon
 {
    public PokemonBase Base { get; set; }
    public int Level { get; set; }
+   public int exp { get; set; }
+   public int exp2NextLevel { get; set; }
 
     public int HP { get; set; }
     public List<Move> Moves { get; set; }
+    
     public Dictionary<PokemonStat, int> Stats { get; private set; }
     public Dictionary<PokemonStat, int> StatBoost { get; private set; }
 
@@ -16,6 +19,7 @@ public class Pokemon
     {
         Base = pBase;
         Level = pLevel;
+        exp2NextLevel = (int)Mathf.Pow(Level, 3);
 
         Moves = new List<Move>();
         foreach (var move in Base.LearnableMoves)
@@ -39,7 +43,7 @@ public class Pokemon
         };
     }
 
-    private void CalculateStats()
+    public void CalculateStats()
     {
         Stats = new Dictionary<PokemonStat, int>();
         Stats.Add(PokemonStat.Attack, Mathf.FloorToInt((Base.Attack * Level) / 100.0f) + 5);

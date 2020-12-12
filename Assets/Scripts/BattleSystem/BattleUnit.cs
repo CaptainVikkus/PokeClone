@@ -25,7 +25,7 @@ public class BattleUnit : MonoBehaviour
 
     public void Setup()
     {
-        Pokemon = new Pokemon(_base, level);
+
         if (isPlayerUnit)
         {
             Pokemon = PlayerController.pokemon;
@@ -33,6 +33,7 @@ public class BattleUnit : MonoBehaviour
         }
         else
         {
+            Pokemon = new Pokemon(PokemonBaseList.getRandomPokemonBase(), level);
             image.sprite = Pokemon.Base.FrontSprite;
         }
 

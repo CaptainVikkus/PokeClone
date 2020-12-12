@@ -33,3 +33,4 @@ MonoBehaviour:
     level: 3
   - moveBase: {fileID: 11400000, guid: 5a8f195518e5b2d4b9376ce658492af9, type: 2}
     level: 2
+  effortYeild: 62

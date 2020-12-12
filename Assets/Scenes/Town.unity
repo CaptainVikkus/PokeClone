@@ -4327,6 +4327,81 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 389376836}
   m_CullTransparentMesh: 0
+--- !u!1 &465803474
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 465803475}
+  - component: {fileID: 465803477}
+  - component: {fileID: 465803476}
+  m_Layer: 0
+  m_Name: ExpBar
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &465803475
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 465803474}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 623461186}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0.5}
+  m_AnchorMax: {x: 0, y: 0.5}
+  m_AnchoredPosition: {x: 25.000004, y: -14.900002}
+  m_SizeDelta: {x: 49.869232, y: 3.1741314}
+  m_Pivot: {x: 0, y: 0.5}
+--- !u!114 &465803476
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 465803474}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 0, g: 0.61699986, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &465803477
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 465803474}
+  m_CullTransparentMesh: 0
 --- !u!1 &588994108
 GameObject:
   m_ObjectHideFlags: 0
@@ -4460,6 +4535,7 @@ RectTransform:
   - {fileID: 201181133}
   - {fileID: 346841206}
   - {fileID: 389376837}
+  - {fileID: 465803475}
   m_Father: {fileID: 1081858213}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -47759,6 +47835,7 @@ MonoBehaviour:
   pokeSprite: {fileID: 201181134}
   lvl: {fileID: 389376838}
   health: {fileID: 58127965}
+  exp: {fileID: 465803475}
 --- !u!1 &1094312257
 GameObject:
   m_ObjectHideFlags: 0
@@ -47869,7 +47946,7 @@ MonoBehaviour:
   portalLayer:
     serializedVersion: 2
     m_Bits: 1024
-  starterPokemon: {fileID: 11400000, guid: 5b746ee15c527d74791003588c22d652, type: 2}
+  starterPokemon: {fileID: 11400000, guid: 9b88e14c0d1cf5d4b9a747da5719326b, type: 2}
   UI: {fileID: 1081858217}
 --- !u!212 &1288061228
 SpriteRenderer:

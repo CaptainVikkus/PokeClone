@@ -12,7 +12,7 @@ public class MenuController : MonoBehaviour
     public Image pokeSprite;
     public TextMeshProUGUI lvl;
     public RectTransform health;
-    private int healthMax = 47;
+    public RectTransform exp;
 
 
     public void UpdateUI()
@@ -22,6 +22,8 @@ public class MenuController : MonoBehaviour
         float calcHp = PlayerController.pokemon.HP / (float)PlayerController.pokemon.MaxHp;
         //Set healthbar to current pokemon health
         health.localScale = new Vector3(calcHp, 1.0f);
+        float calcExp = PlayerController.pokemon.exp / (float)PlayerController.pokemon.exp2NextLevel;
+        exp.localScale = new Vector3(calcExp, 1.0f);
         //Set level to pokemone level
         lvl.SetText(PlayerController.pokemon.Level.ToString());
     }

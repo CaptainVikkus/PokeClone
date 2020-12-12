@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public enum BattleState { Start, PlayerAction, PlayerMove, EnemyMove, Busy}
@@ -112,22 +111,37 @@ public class BattleSystem : MonoBehaviour
     {
         state = BattleState.Busy;
         var move = playerUnit.Pokemon.Moves[currentMove];
-        yield return dialogBox.TypeDialog($"{playerUnit.Pokemon.Base.Name} used {move.Base.Name}!!");
-
-        playerUnit.PlayAttackAnimation();
-        yield return new WaitForSeconds(1.0f);
-
-        enemyUnit.PlayHitAnimation();
-
-        if (move.Base.Category == MoveBase.MoveCategory.Status)
+        if (move.PP == 0)
         {
-            CauseStatusEffect(move, playerUnit, enemyUnit);
+            move = PokemonBase.DefaultMove;
         }
         else
         {
-            var damageDetails = enemyUnit.Pokemon.TakeDamage(move, playerUnit.Pokemon);
-            yield return enemyHud.UpdateHP();
-            yield return ShowDamageDetails(damageDetails);
+            move.PP--;
+        }
+        yield return dialogBox.TypeDialog($"{playerUnit.Pokemon.Base.Name} used {move.Base.Name}!!");
+
+        if (move.Base.Accuracy >= UnityEngine.Random.Range(0, 100))
+        {
+            playerUnit.PlayAttackAnimation();
+            yield return new WaitForSeconds(1.0f);
+
+            enemyUnit.PlayHitAnimation();
+
+            if (move.Base.Category == MoveBase.MoveCategory.Status)
+            {
+                CauseStatusEffect(move, playerUnit, enemyUnit);
+            }
+            else
+            {
+                var damageDetails = enemyUnit.Pokemon.TakeDamage(move, playerUnit.Pokemon);
+                yield return enemyHud.UpdateHP();
+                yield return ShowDamageDetails(damageDetails);
+            }
+        }
+        else
+        {
+            yield return dialogBox.TypeDialog($"{enemyUnit.Pokemon.Base.Name} avoided the attack!!");
         }
 
         if (enemyUnit.Pokemon.HP <= 0)
@@ -135,7 +149,7 @@ public class BattleSystem : MonoBehaviour
             yield return dialogBox.TypeDialog($"{enemyUnit.Pokemon.Base.Name} Fainted!!");
             enemyUnit.PlayFaintAnimation();
 
-            yield return new WaitForSeconds(2f);
+            yield return StartCoroutine(RewardPlayer());
             OnBattleOver(true);
         }
         else
@@ -151,20 +165,27 @@ public class BattleSystem : MonoBehaviour
         var move = enemyUnit.Pokemon.GetAIMove(playerUnit.Pokemon);
         yield return dialogBox.TypeDialog($"{enemyUnit.Pokemon.Base.Name} used {move.Base.Name}!!");
 
-        enemyUnit.PlayAttackAnimation();
-        yield return new WaitForSeconds(1.0f);
-
-        playerUnit.PlayHitAnimation();
-
-        if (move.Base.Category == MoveBase.MoveCategory.Status)
+        if (move.Base.Accuracy >= UnityEngine.Random.Range(0, 100))
         {
-            CauseStatusEffect(move, enemyUnit, playerUnit);
+            enemyUnit.PlayAttackAnimation();
+            yield return new WaitForSeconds(1.0f);
+
+            playerUnit.PlayHitAnimation();
+
+            if (move.Base.Category == MoveBase.MoveCategory.Status)
+            {
+                CauseStatusEffect(move, enemyUnit, playerUnit);
+            }
+            else
+            {
+                var damageDetails = playerUnit.Pokemon.TakeDamage(move, enemyUnit.Pokemon);
+                yield return playerHud.UpdateHP();
+                yield return ShowDamageDetails(damageDetails);
+            }
         }
         else
         {
-            var damageDetails = playerUnit.Pokemon.TakeDamage(move, enemyUnit.Pokemon);
-            yield return playerHud.UpdateHP();
-            yield return ShowDamageDetails(damageDetails);
+            yield return dialogBox.TypeDialog($"{playerUnit.Pokemon.Base.Name} avoided the attack!!");
         }
 
         if (playerUnit.Pokemon.HP <= 0)
@@ -179,6 +200,27 @@ public class BattleSystem : MonoBehaviour
         {
             PlayerAction();
         }
+    }
+
+    IEnumerator RewardPlayer()
+    {
+        int trained = 1;
+        int effortYeild = enemyUnit.Pokemon.Base.EffortYeild;
+        int enemyLevel = enemyUnit.Pokemon.Level;
+
+        int expereinceGained = (int)(trained * effortYeild * enemyLevel / 7);
+        yield return dialogBox.TypeDialog($"{playerUnit.Pokemon.Base.Name} gained {expereinceGained} exp!!");
+        playerUnit.Pokemon.exp += expereinceGained;
+
+        if (playerUnit.Pokemon.exp >= playerUnit.Pokemon.exp2NextLevel)
+        {
+            playerUnit.Pokemon.Level++;
+            playerUnit.Pokemon.exp = 0;
+            playerUnit.Pokemon.exp2NextLevel = (int)Math.Pow(playerUnit.Pokemon.Level, 3);
+            playerUnit.Pokemon.CalculateStats();
+            yield return dialogBox.TypeDialog($"{playerUnit.Pokemon.Base.Name} leveled up");
+        }
+
     }
 
     IEnumerator ShowDamageDetails(DamageDetails damageDetails)

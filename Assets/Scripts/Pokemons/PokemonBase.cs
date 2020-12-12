@@ -27,7 +27,10 @@ public class PokemonBase : ScriptableObject
     [SerializeField] int speed;
 
     [SerializeField] List<LearnableMove> learnableMoves;
+    [SerializeField] static MoveBase defaultMoveBase;
 
+    [SerializeField] int effortYeild;
+    
     // Getters
     public string Name { get { return name; } }
     public string Description { get { return description; } }
@@ -44,6 +47,11 @@ public class PokemonBase : ScriptableObject
     public List<LearnableMove> LearnableMoves {
         get { return learnableMoves; }
     }
+    public static Move DefaultMove
+    {
+        get { return new Move(defaultMoveBase); }
+    }
+    public int EffortYeild { get { return effortYeild; } }
 
     //Takes in a string of 
     public static PokemonBase ReadBaseMonString(string baseMonName)
@@ -150,7 +158,12 @@ public class TypeChart
 }
 
 [CreateAssetMenu(fileName = "Pokemon", menuName = "Pokemon/Create pokemon list")]
-public class PokemonBaseList : ScriptableObject
+public static class PokemonBaseList
 {
-    public List<PokemonBase> baseList;
+    static public PokemonBase[] baseList = Resources.FindObjectsOfTypeAll<PokemonBase>();
+
+    public static PokemonBase getRandomPokemonBase()
+    {
+        return baseList[UnityEngine.Random.Range(0, baseList.Length)];
+    }
 }
