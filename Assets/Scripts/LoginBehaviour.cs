@@ -16,6 +16,8 @@ public class LoginBehaviour : MonoBehaviour
             //LoginFieldText.text = "Hello";
             LoginFieldText.Select();
         }
+        PokemonBase _base = PokemonBase.ReadBaseMonString("Squirtle");
+        SaveSystem.startPokemon = new Pokemon(_base, 5);
     }
 
     // Check the Login Field for a valid username

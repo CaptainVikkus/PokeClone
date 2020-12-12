@@ -151,7 +151,7 @@ public class TypeChart
 [CreateAssetMenu(fileName = "Pokemon", menuName = "Pokemon/Create pokemon list")]
 public static class PokemonBaseList
 {
-    static public PokemonBase[] baseList = Resources.FindObjectsOfTypeAll<PokemonBase>();
+    static public PokemonBase[] baseList = Resources.LoadAll<PokemonBase>("Scriptable Objects/Pokemons");
 
     public static PokemonBase getRandomPokemonBase()
     {

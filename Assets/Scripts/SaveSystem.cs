@@ -33,13 +33,14 @@ public static class SaveSystem
             ///Build pokemon from Json string
             string strMon = File.ReadAllText(path);
             startPokemon = Pokemon.ReadPokemonString(strMon);
-            PlayerController.pokemon = startPokemon;
             //Debug.Log("Player " + player + " Loaded " + startPokemon.Base.name);
         }
         ///Player Not Found
         else
         {
         }
+        ///Set Player's Pokemon to either saved or starter
+        PlayerController.pokemon = startPokemon;
     }
 }
 

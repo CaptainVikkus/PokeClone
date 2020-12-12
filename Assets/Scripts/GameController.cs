@@ -69,12 +69,15 @@ public class GameController : MonoBehaviour
                 playerController.gameObject.transform.position = targetPlayerLocation;
                 targetPlayerLocation = Vector3.zero;
             }
+            state = GameState.FreeRoam;
         }
         else if (battleSystem != null)
         {
+            state = GameState.Battle;
         }
         else
         {
+            Debug.Log("No Player or Battle Found");
             state = GameState.Dialog;
         }
     }
