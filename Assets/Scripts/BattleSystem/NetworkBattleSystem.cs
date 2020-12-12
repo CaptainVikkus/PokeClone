@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using UnityEngine;
+using Unity.Networking.Transport;
 
 public class NetworkBattleSystem : MonoBehaviour
 {
@@ -67,6 +68,8 @@ public class NetworkBattleSystem : MonoBehaviour
                 break;
             case BattleState.PlayerMove:
                 HandleMoveSelection();
+                break;
+            case BattleState.EnemyMove:
                 break;
         }
 
