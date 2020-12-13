@@ -54,7 +54,7 @@ public class NetworkBattleSystem : MonoBehaviour
         Debug.Log("Address:" + endpoint.Address);
         Assert.IsTrue(m_Connection.IsCreated);
 
-        StartCoroutine(FindServer(endpoint));
+        //StartCoroutine(FindServer(endpoint));
     }
 
     private IEnumerator FindServer(NetworkEndPoint endpoint)
@@ -62,13 +62,14 @@ public class NetworkBattleSystem : MonoBehaviour
         while (!connected)
         {
             m_Connection = m_Driver.Connect(endpoint);
-            yield return new WaitForEndOfFrame();
+            yield return dialogBox.TypeDialog($" Connecting to battle.");
         }
+        StartCoroutine(SetupBattle());
     }
 
     public void StartBattle()
     {
-        StartCoroutine(SetupBattle());
+
     }
 
     private IEnumerator SetupBattle()
