@@ -127,7 +127,7 @@ public class GameController : MonoBehaviour
                 battleSystem.HandleUpdate();
             break;
             case (GameState.Multiplayer):
-                battleSystem.HandleUpdate();
+                multiplayerSystem.HandleUpdate();
                 break;
             case (GameState.Dialog):
                 break;
