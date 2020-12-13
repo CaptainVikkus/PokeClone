@@ -51,6 +51,7 @@ public class NetworkBattleSystem : MonoBehaviour
         var endpoint = NetworkEndPoint.Parse(serverIP, serverPort);
         m_Connection = m_Driver.Connect(endpoint);
 
+        if (m_Connection == default(NetworkConnection)) { Debug.Log("Noperino"); }
         Assert.IsTrue(m_Connection.IsCreated);
 
         StartCoroutine(SetupBattle());
@@ -383,30 +384,7 @@ public class NetworkBattleSystem : MonoBehaviour
     {
         m_Driver.ScheduleUpdate().Complete();
 
-        if (m_Connection.IsCreated)
-        {
-            DataStreamReader stream;
-            NetworkEvent.Type cmd;
-            cmd = m_Driver.PopEventForConnection(m_Connection, out stream);
-            while (cmd != NetworkEvent.Type.Empty)
-            {
-                if (cmd == NetworkEvent.Type.Connect)
-                {
-                    OnConnect(m_Connection);
-                }
-                else if (cmd == NetworkEvent.Type.Data)
-                {
-                    OnData(stream);
-                }
-                else if (cmd == NetworkEvent.Type.Disconnect)
-                {
-                    OnBattleOver(true);
-                }
-
-                cmd = m_Driver.PopEventForConnection(m_Connection, out stream);
-            }
-        }
-        else
+        if (!m_Connection.IsCreated)
         {
             var c = m_Driver.Accept();
             if (c != default(NetworkConnection))
@@ -414,7 +392,32 @@ public class NetworkBattleSystem : MonoBehaviour
                 m_Connection = c;
                 Debug.Log("Accepted a connection");
             }
+            Debug.Log("Checkerino");
+            return;
         }
+
+        Debug.Log("Stream Start");
+        DataStreamReader stream;
+        NetworkEvent.Type cmd;
+        cmd = m_Driver.PopEventForConnection(m_Connection, out stream);
+        while (cmd != NetworkEvent.Type.Empty)
+        {
+            if (cmd == NetworkEvent.Type.Connect)
+            {
+                OnConnect(m_Connection);
+            }
+            else if (cmd == NetworkEvent.Type.Data)
+            {
+                OnData(stream);
+            }
+            else if (cmd == NetworkEvent.Type.Disconnect)
+            {
+                OnBattleOver(true);
+            }
+
+            cmd = m_Driver.PopEventForConnection(m_Connection, out stream);
+        }
+        Debug.Log("Stream End");
     }
 
     private void OnConnect(NetworkConnection c)
