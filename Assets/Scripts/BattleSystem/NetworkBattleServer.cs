@@ -100,7 +100,7 @@ public class NetworkBattleServer : MonoBehaviour
         string id = m_Connections[connection].InternalId.ToString();
         //delete the connection
         Debug.Log("Client " + id + " disconnected from Battle Server");
-        m_Connections[connection] = default(NetworkConnection);
+        m_Connections[connection].Disconnect(m_Driver);
     }
 
     // Update is called once per frame

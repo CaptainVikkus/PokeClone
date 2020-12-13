@@ -186,7 +186,7 @@ public class ServerManager : MonoBehaviour
         }
         //delete the connection
         Debug.Log("Client disconnected from server");
-        m_Connections[connection] = default(NetworkConnection);
+        m_Connections[connection].Disconnect(m_Driver);
     }
 
     void SendBattleMessage(PlayerMessage enemy, bool turn, NetworkConnection c)
