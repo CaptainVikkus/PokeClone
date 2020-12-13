@@ -158,31 +158,6 @@ public class NetworkBattleSystem : MonoBehaviour
 
     void HandleEnemyAction()
     {
-        if (!m_Connection.IsCreated)
-        {
-            return;
-        }
-
-        DataStreamReader stream;
-        NetworkEvent.Type cmd;
-        cmd = m_Connection.PopEvent(m_Driver, out stream);
-        while (cmd != NetworkEvent.Type.Empty)
-        {
-            if (cmd == NetworkEvent.Type.Connect)
-            {
-                //OnConnect();
-            }
-            else if (cmd == NetworkEvent.Type.Data)
-            {
-                OnData(stream);
-            }
-            else if (cmd == NetworkEvent.Type.Disconnect)
-            {
-                OnBattleOver(true);
-            }
-
-            cmd = m_Connection.PopEvent(m_Driver, out stream);
-        }
 
     }
 
@@ -396,7 +371,7 @@ public class NetworkBattleSystem : MonoBehaviour
                 var mMsg = JsonUtility.FromJson<MoveMessage>(recMsg);
                 MoveBase mBase = MoveBaseList.GetMoveBase(mMsg.MoveName);
                 Move move = new Move(mBase);
-                StartCoroutine(PerformEnemyMove(move, mMsg.hit));
+                if (state == BattleState.EnemyMove) { StartCoroutine(PerformEnemyMove(move, mMsg.hit)); }
                 break;
             default:
                 Debug.Log("Unrecognized message received!");
@@ -410,7 +385,26 @@ public class NetworkBattleSystem : MonoBehaviour
 
         if (m_Connection.IsCreated)
         {
-            return;
+            DataStreamReader stream;
+            NetworkEvent.Type cmd;
+            cmd = m_Connection.PopEvent(m_Driver, out stream);
+            while (cmd != NetworkEvent.Type.Empty)
+            {
+                if (cmd == NetworkEvent.Type.Connect)
+                {
+                    //OnConnect();
+                }
+                else if (cmd == NetworkEvent.Type.Data)
+                {
+                    OnData(stream);
+                }
+                else if (cmd == NetworkEvent.Type.Disconnect)
+                {
+                    OnBattleOver(true);
+                }
+
+                cmd = m_Connection.PopEvent(m_Driver, out stream);
+            }
         }
 
         m_Connection = m_Driver.Accept();
