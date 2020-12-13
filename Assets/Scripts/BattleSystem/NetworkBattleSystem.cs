@@ -37,8 +37,16 @@ public class NetworkBattleSystem : MonoBehaviour
         serverIP = BattleData.enemyID;
         enemyTrainerName = BattleData.playerName;
 
+        //Setup Driver
         m_Driver = NetworkDriver.Create();
-        m_Driver.Listen();
+        var entrypoint = NetworkEndPoint.AnyIpv4;
+        entrypoint.Port = serverPort;
+        if (m_Driver.Bind(entrypoint) != 0)
+            Debug.Log("Failed to bind to port " + serverPort);
+        else
+            m_Driver.Listen();
+
+        //Setup Connection
         m_Connection = default(NetworkConnection);
         var endpoint = NetworkEndPoint.Parse(serverIP, serverPort);
         m_Connection = m_Driver.Connect(endpoint);
