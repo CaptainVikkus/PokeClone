@@ -387,12 +387,12 @@ public class NetworkBattleSystem : MonoBehaviour
         {
             DataStreamReader stream;
             NetworkEvent.Type cmd;
-            cmd = m_Connection.PopEvent(m_Driver, out stream);
+            cmd = m_Driver.PopEventForConnection(m_Connection, out stream);
             while (cmd != NetworkEvent.Type.Empty)
             {
                 if (cmd == NetworkEvent.Type.Connect)
                 {
-                    //OnConnect();
+                    OnConnect(m_Connection);
                 }
                 else if (cmd == NetworkEvent.Type.Data)
                 {
@@ -403,11 +403,24 @@ public class NetworkBattleSystem : MonoBehaviour
                     OnBattleOver(true);
                 }
 
-                cmd = m_Connection.PopEvent(m_Driver, out stream);
+                cmd = m_Driver.PopEventForConnection(m_Connection, out stream);
             }
         }
+        else
+        {
+            var c = m_Driver.Accept();
+            if (c != default(NetworkConnection))
+            {
+                m_Connection = c;
+                Debug.Log("Accepted a connection");
+            }
+        }
+    }
 
-        m_Connection = m_Driver.Accept();
+    private void OnConnect(NetworkConnection c)
+    {
+        m_Connection = c;
+        Debug.Log("Accepted a connection");
     }
 
     public void OnDestroy()
