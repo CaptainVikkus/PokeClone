@@ -16,7 +16,7 @@ public class NetworkBattleServer : MonoBehaviour
     //private NetworkBattleSystem battleSystem;
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         //battleSystem = GetComponent<NetworkBattleSystem>();
 
@@ -29,6 +29,8 @@ public class NetworkBattleServer : MonoBehaviour
             m_Driver.Listen();
 
         m_Connections = new NativeList<NetworkConnection>(16, Allocator.Persistent);
+
+        Debug.Log("Server Started");
     }
 
     void SendToClient(string message, NetworkConnection c)
@@ -136,7 +138,11 @@ public class NetworkBattleServer : MonoBehaviour
             cmd = m_Driver.PopEventForConnection(m_Connections[i], out stream);
             while (cmd != NetworkEvent.Type.Empty)
             {
-                if (cmd == NetworkEvent.Type.Data)
+                if (cmd == NetworkEvent.Type.Connect)
+                {
+                    OnConnect(m_Connections[i]);
+                }
+                else if (cmd == NetworkEvent.Type.Data)
                 {
                     OnData(stream, i);
                 }

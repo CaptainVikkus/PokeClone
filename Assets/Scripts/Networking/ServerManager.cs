@@ -17,6 +17,9 @@ public class ServerManager : MonoBehaviour
     public List<PlayerMessage> playerMessages =
         new List<PlayerMessage>();
 
+    public List<PlayerMessage> battle =
+        new List<PlayerMessage>();
+
     // Start is called before the first frame update
     void Start()
     {

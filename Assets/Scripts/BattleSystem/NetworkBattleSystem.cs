@@ -35,10 +35,7 @@ public class NetworkBattleSystem : MonoBehaviour
     private void Start()
     {
         battleServer = GetComponent<NetworkBattleServer>();
-    }
 
-    public void StartBattle()
-    {
         Debug.Log("Enemy IP: " + BattleData.enemyID + " : " + serverPort);
         serverIP = BattleData.enemyID;
         enemyTrainerName = BattleData.playerName;
@@ -48,11 +45,17 @@ public class NetworkBattleSystem : MonoBehaviour
 
         //Setup Connection
         m_Connection = default(NetworkConnection);
+        //var endpoint = NetworkEndPoint.LoopbackIpv4;
+        //endpoint.Port = serverPort;
         var endpoint = NetworkEndPoint.Parse(serverIP, serverPort);
         m_Connection = m_Driver.Connect(endpoint);
 
+        Debug.Log("Address:" + endpoint.Address);
         Assert.IsTrue(m_Connection.IsCreated);
+    }
 
+    public void StartBattle()
+    {
         StartCoroutine(SetupBattle());
     }
 
@@ -347,6 +350,7 @@ public class NetworkBattleSystem : MonoBehaviour
 
     void SendMoveToServer(Move move, bool hit)
     {
+        Debug.Log("Sent move to server");
         battleServer.SendMove(move, hit);
     }
 
