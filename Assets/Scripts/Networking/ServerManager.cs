@@ -35,17 +35,20 @@ public class ServerManager : MonoBehaviour
 
     System.Collections.IEnumerator Heartbeat()
     {
-        Debug.Log("Beat Start");
-        for (int i = 0; i < m_Connections.Length; i++)
+        while(this.isActiveAndEnabled)
         {
-            Assert.IsTrue(m_Connections[i].IsCreated);
+            Debug.Log("Beat Start");
+            for (int i = 0; i < m_Connections.Length; i++)
+            {
+                Assert.IsTrue(m_Connections[i].IsCreated);
 
-            Debug.Log("Heartbeat sent to:" + m_Connections[i].InternalId);
-            var m = new MessageHeader();
-            m.type = MessageType.HEARTBEAT;
-            SendToClient(JsonUtility.ToJson(m), m_Connections[i]);
+                Debug.Log("Heartbeat sent to:" + m_Connections[i].InternalId);
+                var m = new MessageHeader();
+                m.type = MessageType.HEARTBEAT;
+                SendToClient(JsonUtility.ToJson(m), m_Connections[i]);
+            }
+            yield return new WaitForSeconds(1);
         }
-        yield return new WaitForSeconds(1);
     }
 
     // Update is called once per frame

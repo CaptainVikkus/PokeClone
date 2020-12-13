@@ -53,10 +53,13 @@ public class MatchmakingController : MonoBehaviour
 
     private IEnumerator Heartbeat()
     {
-        var m = new MessageHeader();
-        m.type = MessageType.HEARTBEAT;
-        SendToServer(JsonUtility.ToJson(m));
-        yield return new WaitForSeconds(1);
+        while (this.isActiveAndEnabled)
+        {
+            var m = new MessageHeader();
+            m.type = MessageType.HEARTBEAT;
+            SendToServer(JsonUtility.ToJson(m));
+            yield return new WaitForSeconds(1);
+        }
     }
 
     void OnDisconnect()
