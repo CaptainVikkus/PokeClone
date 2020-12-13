@@ -51,7 +51,7 @@ public class NetworkBattleSystem : MonoBehaviour
         var endpoint = NetworkEndPoint.Parse(serverIP, serverPort);
         m_Connection = m_Driver.Connect(endpoint);
 
-        if (m_Connection == default(NetworkConnection)) { Debug.Log("Noperino"); }
+        SendHeartBeat();
         Assert.IsTrue(m_Connection.IsCreated);
 
         StartCoroutine(SetupBattle());
@@ -359,6 +359,18 @@ public class NetworkBattleSystem : MonoBehaviour
         m_Driver.EndSend(writer);
     }
 
+    void SendHeartBeat()
+    {
+        var hb = new MessageHeader();
+        hb.type = MessageType.HEARTBEAT;
+        var message = JsonUtility.ToJson(hb);
+
+        var writer = m_Driver.BeginSend(NetworkPipeline.Null, m_Connection);
+        NativeArray<byte> bytes = new NativeArray<byte>(Encoding.ASCII.GetBytes(message), Allocator.Temp);
+        writer.WriteBytes(bytes);
+        m_Driver.EndSend(writer);
+    }
+
     void OnData(DataStreamReader stream)
     {
         NativeArray<byte> bytes = new NativeArray<byte>(stream.Length, Allocator.Temp);
@@ -373,6 +385,9 @@ public class NetworkBattleSystem : MonoBehaviour
                 MoveBase mBase = MoveBaseList.GetMoveBase(mMsg.MoveName);
                 Move move = new Move(mBase);
                 if (state == BattleState.EnemyMove) { StartCoroutine(PerformEnemyMove(move, mMsg.hit)); }
+                break;
+            case MessageType.HEARTBEAT:
+                Debug.Log("Hiya Neighbourino");
                 break;
             default:
                 Debug.Log("Unrecognized message received!");
@@ -392,11 +407,9 @@ public class NetworkBattleSystem : MonoBehaviour
                 m_Connection = c;
                 Debug.Log("Accepted a connection");
             }
-            Debug.Log("Checkerino");
             return;
         }
 
-        Debug.Log("Stream Start");
         DataStreamReader stream;
         NetworkEvent.Type cmd;
         cmd = m_Driver.PopEventForConnection(m_Connection, out stream);
@@ -414,10 +427,9 @@ public class NetworkBattleSystem : MonoBehaviour
             {
                 OnBattleOver(true);
             }
-
+            Debug.Log("Event Handled");
             cmd = m_Driver.PopEventForConnection(m_Connection, out stream);
         }
-        Debug.Log("Stream End");
     }
 
     private void OnConnect(NetworkConnection c)
