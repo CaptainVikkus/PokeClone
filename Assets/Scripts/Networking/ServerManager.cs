@@ -33,6 +33,21 @@ public class ServerManager : MonoBehaviour
         StartCoroutine(Heartbeat());
     }
 
+    System.Collections.IEnumerator Heartbeat()
+    {
+        Debug.Log("Beat Start");
+        for (int i = 0; i < m_Connections.Length; i++)
+        {
+            Assert.IsTrue(m_Connections[i].IsCreated);
+
+            Debug.Log("Heartbeat sent to:" + m_Connections[i].InternalId);
+            var m = new MessageHeader();
+            m.type = MessageType.HEARTBEAT;
+            SendToClient(JsonUtility.ToJson(m), m_Connections[i]);
+        }
+        yield return new WaitForSeconds(1);
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -92,8 +107,8 @@ public class ServerManager : MonoBehaviour
             bool first = (UnityEngine.Random.value > 0.5f); //random true false
             var p1 = playerMessages[0];
             var p2 = playerMessages[1];
-            SendBattleMessage(p2, first, m_Connections[p1.serverID]); //Send Enemy p2 to Player p1
-            SendBattleMessage(p1, !first, m_Connections[p2.serverID]); //Send Enemy p1 to Player p2
+            SendBattleMessage(p2, first, FindConnection(p1.serverID)); //Send Enemy p2 to Player p1
+            SendBattleMessage(p1, !first, FindConnection(p2.serverID)); //Send Enemy p1 to Player p2
             playerMessages.RemoveAt(0);//remove player1
             playerMessages.RemoveAt(0);//remove player2
         }
@@ -129,7 +144,7 @@ public class ServerManager : MonoBehaviour
                 UpdateLobby(pMsg, i);
                 break;
             case MessageType.HEARTBEAT:
-                Debug.Log("Heartbeat received");
+                Debug.Log("Heartbeat received from: " + m_Connections[i].InternalId);
                 break;
             default:
                 Debug.Log("SERVER ERROR: Unrecognized message received!");
@@ -173,6 +188,8 @@ public class ServerManager : MonoBehaviour
 
     void SendBattleMessage(PlayerMessage enemy, bool turn, NetworkConnection c)
     {
+        Assert.IsTrue(c.IsCreated);
+
         var bMsg = new BattleMessage();
         bMsg.turn = turn ? BattleState.PlayerAction : BattleState.EnemyMove;
         bMsg.enemyID = enemy.connectionID;
@@ -196,16 +213,17 @@ public class ServerManager : MonoBehaviour
         m_Driver.EndSend(writer);
     }
 
-    private IEnumerator Heartbeat()
+    NetworkConnection FindConnection(int id)
     {
         for (int i = 0; i < m_Connections.Length; i++)
         {
-            Assert.IsTrue(m_Connections[i].IsCreated);
-
-            var m = new MessageHeader();
-            m.type = MessageType.HEARTBEAT;
-            SendToClient(JsonUtility.ToJson(m), m_Connections[i]);
+            if (m_Connections[i].InternalId == id)
+            {
+                return m_Connections[i];
+            }
         }
-        yield return new WaitForSeconds(1);
+
+        return default(NetworkConnection);
     }
+
 }
