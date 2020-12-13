@@ -54,7 +54,7 @@ public class NetworkBattleSystem : MonoBehaviour
         Debug.Log("Address:" + endpoint.Address);
         Assert.IsTrue(m_Connection.IsCreated);
 
-        //StartCoroutine(FindServer(endpoint));
+        StartCoroutine(FindServer(endpoint));
     }
 
     private IEnumerator FindServer(NetworkEndPoint endpoint)
