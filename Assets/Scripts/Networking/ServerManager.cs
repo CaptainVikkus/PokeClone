@@ -151,9 +151,12 @@ public class ServerManager : MonoBehaviour
     {
         //get the internal id
         int id = m_Connections[connection].InternalId;
-        foreach (var player in playerMessages)
+        if (playerMessages.Count > 0)
         {
-            if (player.serverID == id) { playerMessages.Remove(player); }
+            foreach (var player in playerMessages)
+            {
+                if (player.serverID == id) { playerMessages.Remove(player); }
+            }
         }
         //delete the connection
         Debug.Log("Client disconnected from server");
