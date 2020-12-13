@@ -59,9 +59,9 @@ public class NetworkBattleSystem : MonoBehaviour
 
     private IEnumerator FindServer(NetworkEndPoint endpoint)
     {
-        while (!connected)
+        while (m_Connection.GetState(m_Driver) == NetworkConnection.State.Connecting)
         {
-            m_Connection = m_Driver.Connect(endpoint);
+            //m_Connection = m_Driver.Connect(endpoint);
             yield return dialogBox.TypeDialog($" Connecting to battle.");
         }
         StartCoroutine(SetupBattle());
@@ -363,7 +363,7 @@ public class NetworkBattleSystem : MonoBehaviour
 
     void SendMoveToServer(Move move, bool hit)
     {
-        Debug.Log("Sent move to server");
+        Debug.Log("Sent move to Battle Server");
         battleServer.SendMove(move, hit);
     }
 
@@ -436,13 +436,13 @@ public class NetworkBattleSystem : MonoBehaviour
 
     void OnConnect()
     {
-        Debug.Log("We are now connected to the server");
+        Debug.Log("We are now connected to the Battle Server");
         connected = true;
         //StartCoroutine(Heartbeat());
     }
     void OnDisconnect()
     {
-        Debug.Log("Client got disconnected from server");
+        Debug.Log("Client got disconnected from Battle Server");
         m_Connection = default(NetworkConnection);
     }
 

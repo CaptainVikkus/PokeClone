@@ -30,7 +30,7 @@ public class NetworkBattleServer : MonoBehaviour
 
         m_Connections = new NativeList<NetworkConnection>(16, Allocator.Persistent);
 
-        Debug.Log("Server Started");
+        Debug.Log("Battle Server Started");
     }
 
     void SendToClient(string message, NetworkConnection c)
@@ -72,7 +72,7 @@ public class NetworkBattleServer : MonoBehaviour
     void OnConnect(NetworkConnection c)
     {
         m_Connections.Add(c);
-        Debug.Log("Accepted a connection");
+        Debug.Log("Battle Server accepted a connection");
     }
     void OnData(DataStreamReader stream, int i)
     {
@@ -99,7 +99,7 @@ public class NetworkBattleServer : MonoBehaviour
         //get the internal id
         string id = m_Connections[connection].InternalId.ToString();
         //delete the connection
-        Debug.Log("Client disconnected from server");
+        Debug.Log("Client disconnected from Battle Server");
         m_Connections[connection] = default(NetworkConnection);
     }
 
