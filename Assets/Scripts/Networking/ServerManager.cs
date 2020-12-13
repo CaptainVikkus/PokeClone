@@ -66,7 +66,11 @@ public class ServerManager : MonoBehaviour
             cmd = m_Driver.PopEventForConnection(m_Connections[i], out stream);
             while (cmd != NetworkEvent.Type.Empty)
             {
-                if (cmd == NetworkEvent.Type.Data)
+                if (cmd == NetworkEvent.Type.Connect)
+                {
+                    OnConnect(m_Connections[i]);
+                }
+                else if (cmd == NetworkEvent.Type.Data)
                 {
                     OnData(stream, i);
                 }
