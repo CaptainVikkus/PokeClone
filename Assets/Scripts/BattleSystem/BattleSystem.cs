@@ -239,6 +239,7 @@ public class BattleSystem : MonoBehaviour
             yield return dialogBox.TypeDialog("It wasn't very effective...");
         }
     }
+
     void HandleActionSelection()
     {
         if (Input.GetKeyDown(KeyCode.DownArrow))

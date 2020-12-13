@@ -5,6 +5,8 @@ using Unity.Networking.Transport;
 using NetworkMessages;
 using Unity.Collections;
 using System.Text;
+using UnityEngine.Networking;
+using UnityEngine.SceneManagement;
 
 public class MatchmakingController : MonoBehaviour
 {
@@ -16,8 +18,7 @@ public class MatchmakingController : MonoBehaviour
     public ushort serverPort;
     [HideInInspector] public static string opponentIP;
     [HideInInspector] public static ushort opponentPort;
-
-    public string localID;
+    private string myIP;
 
     // Start is called before the first frame update
     void Start()
@@ -26,11 +27,21 @@ public class MatchmakingController : MonoBehaviour
         m_Connection = default(NetworkConnection);
         var endpoint = NetworkEndPoint.Parse(serverIP, serverPort);
         m_Connection = m_Driver.Connect(endpoint);
+
+        StartCoroutine(GetIPAddress());
     }
 
     void AddToLobby()
     {
+        //Build PlayerMsg
+        PlayerMessage pMsg = new PlayerMessage();
+        pMsg.connectionID = myIP;
+        pMsg.playerName = SaveSystem.currentPlayer;
+        pMsg.pokemonName = PlayerController.pokemon.Base.name;
+        pMsg.hp = PlayerController.pokemon.HP;
+        pMsg.Lvl = PlayerController.pokemon.Level;
 
+        SendToServer(JsonUtility.ToJson(pMsg));
     }
 
     void OnConnect()
@@ -61,6 +72,9 @@ public class MatchmakingController : MonoBehaviour
             case MessageType.PLAYER_MSG:
                 break;
             case MessageType.BATTLE_MSG:
+                var bMsg = JsonUtility.FromJson<BattleMessage>(recMsg);
+                BattleData.SetBattleData(bMsg);
+                GameController.Instance.StartMultiplayerBattle();
                 break;
             default:
                 Debug.Log("Unrecognized message received!");
@@ -80,11 +94,13 @@ public class MatchmakingController : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision)
     {
         glow.SetActive(true);
+        AddToLobby();
     }
 
     private void OnTriggerExit2D(Collider2D collision)
     {
         glow.SetActive(false);
+        AddToLobby(); // Second time should remove player
     }
     //** /Glow and Trigger **//
 
@@ -120,4 +136,30 @@ public class MatchmakingController : MonoBehaviour
         }
     }
 
+    IEnumerator GetIPAddress()
+    {
+        UnityWebRequest www = UnityWebRequest.Get("http://checkip.dyndns.org");
+        yield return www.SendWebRequest();
+
+        if (www.isNetworkError || www.isHttpError)
+        {
+            Debug.Log(www.error);
+        }
+        else
+        {
+            string result = www.downloadHandler.text;
+
+            // This results in a string similar to this: <html><head><title>Current IP Check</title></head><body>Current IP Address: 123.123.123.123</body></html>
+            // where 123.123.123.123 is your external IP Address.
+            //  Debug.Log("" + result);
+
+            string[] a = result.Split(':'); // Split into two substrings -> one before : and one after. 
+            string a2 = a[1].Substring(1);  // Get the substring after the :
+            string[] a3 = a2.Split('<');    // Now split to the first HTML tag after the IP address.
+            string a4 = a3[0];              // Get the substring before the tag.
+
+            Debug.Log("External IP Address = " + a4);
+            myIP = a4;
+        }
+    }
 }

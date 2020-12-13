@@ -4,11 +4,12 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 
-public enum GameState { FreeRoam, Battle, Dialog }
+public enum GameState { FreeRoam, Battle, Multiplayer, Dialog }
 public class GameController : MonoBehaviour
 {
     [SerializeField] PlayerController playerController;
     [SerializeField] BattleSystem battleSystem;
+    [SerializeField] NetworkBattleSystem multiplayerSystem;
     [SerializeField] AudioManager audioManager;
     [SerializeField] ScreenOverlayManager overlayManager;
 
@@ -75,6 +76,10 @@ public class GameController : MonoBehaviour
         {
             state = GameState.Battle;
         }
+        else if (multiplayerSystem != null)
+        {
+            state = GameState.Multiplayer;
+        }
         else
         {
             Debug.Log("No Player or Battle Found");
@@ -101,6 +106,14 @@ public class GameController : MonoBehaviour
             Debug.Log("Adventure Mode");
             playerController.OnEncountered += StartBattle;
         }
+
+        multiplayerSystem = FindObjectOfType<NetworkBattleSystem>();
+        if (multiplayerSystem != null)
+        {
+            Debug.Log("Multiplayer Mode");
+            multiplayerSystem.OnBattleOver += EndBattle;
+            multiplayerSystem.StartBattle();
+        }
     }
 
     private void Update()
@@ -110,12 +123,14 @@ public class GameController : MonoBehaviour
             case (GameState.FreeRoam):
                 playerController.HandleUpdate();
             break;
-            case (GameState.Dialog):
-            break;
             case (GameState.Battle):
                 battleSystem.HandleUpdate();
             break;
-            
+            case (GameState.Multiplayer):
+                battleSystem.HandleUpdate();
+                break;
+            case (GameState.Dialog):
+                break;
         };
     }
     void StartBattle()
@@ -140,5 +155,20 @@ public class GameController : MonoBehaviour
         yield return new WaitForSeconds(2.0f);
         state = GameState.Battle;
         SceneManager.LoadScene("BattleSystem");
+    }
+
+    public void StartMultiplayerBattle()
+    {
+        onEnterEncounter.Invoke();
+        state = GameState.Dialog;
+        audioManager.FadeTrack(AudioManager.Track.Battle);
+        StartCoroutine(EnterEncounterTrainer());
+    }
+
+    IEnumerator EnterEncounterTrainer()
+    {
+        yield return new WaitForSeconds(2.0f);
+        state = GameState.Multiplayer;
+        SceneManager.LoadScene("NetworkBattleSystem");
     }
 }

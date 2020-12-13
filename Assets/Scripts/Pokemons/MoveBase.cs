@@ -81,4 +81,22 @@ public class MoveBase : ScriptableObject
     }
 }
 
+public static class MoveBaseList
+{
+    static public MoveBase[] baseList = Resources.LoadAll<MoveBase>("Scriptable Objects/Moves");
 
+    public static MoveBase GetMoveBase(string moveName)
+    {
+        foreach (var moveBase in baseList)
+        {
+            //Debug.Log(pokemonBase.name);
+            if (moveBase.Name == moveName)
+            {
+                return moveBase;
+            }
+        }
+
+        return null;
+    }
+
+}

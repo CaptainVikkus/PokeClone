@@ -20,11 +20,12 @@ namespace NetworkMessages
     [System.Serializable]
     public class PlayerMessage : MessageHeader
     {
-        string connectionID;
-        string playerName;
-        string pokemonName;
-        int Lvl;
-        int hp;
+        public string connectionID;
+        public int serverID;
+        public string playerName;
+        public string pokemonName;
+        public int Lvl;
+        public int hp;
         public PlayerMessage() // Constructor
         {
             type = MessageType.PLAYER_MSG;
@@ -35,12 +36,12 @@ namespace NetworkMessages
     [System.Serializable]
     public class BattleMessage : MessageHeader
     {
-        string enemyID;
-        string playerName;
-        string pokemonName;
-        int Lvl;
-        int hp;
-        BattleState turn;
+        public string enemyID;
+        public string playerName;
+        public string pokemonName;
+        public int Lvl;
+        public int hp;
+        public BattleState turn;
         public BattleMessage() // Constructor
         {
             type = MessageType.BATTLE_MSG;
@@ -51,13 +52,11 @@ namespace NetworkMessages
     [System.Serializable]
     public class MoveMessage : MessageHeader
     {
-        bool hit;
-        string MoveName;
+        public bool hit;
+        public string MoveName;
         public MoveMessage() // Constructor
         {
             type = MessageType.MOVE_MSG;
         }
     }
-
-
 }

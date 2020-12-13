@@ -33,7 +33,10 @@ public class BattleUnit : MonoBehaviour
         }
         else
         {
-            Pokemon = new Pokemon(PokemonBaseList.getRandomPokemonBase(), level);
+            if (Pokemon == null)
+            {
+                Pokemon = new Pokemon(PokemonBaseList.getRandomPokemonBase(), level);
+            }
             image.sprite = Pokemon.Base.FrontSprite;
         }
 

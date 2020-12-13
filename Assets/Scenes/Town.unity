@@ -4480,6 +4480,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerController: {fileID: 1288061227}
   battleSystem: {fileID: 0}
+  multiplayerSystem: {fileID: 0}
   audioManager: {fileID: 0}
   overlayManager: {fileID: 1401611041}
   targetPlayerLocation: {x: 0, y: 0, z: 0}
@@ -49322,8 +49323,8 @@ GameObject:
   m_Component:
   - component: {fileID: 2070657607}
   - component: {fileID: 2070657606}
-  - component: {fileID: 2070657608}
   - component: {fileID: 2070657609}
+  - component: {fileID: 2070657608}
   m_Layer: 0
   m_Name: MatchmakingPlate
   m_TagString: Untagged
@@ -49406,10 +49407,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 2070657605}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e31bf0476bed9f84dab52e29242c8686, type: 3}
+  m_Script: {fileID: 11500000, guid: 0e4ba419ff365424f8d988eaee1bbff9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   glow: {fileID: 2039334326}
+  serverIP: 
+  serverPort: 12345
+  localID: 
 --- !u!61 &2070657609
 BoxCollider2D:
   m_ObjectHideFlags: 0

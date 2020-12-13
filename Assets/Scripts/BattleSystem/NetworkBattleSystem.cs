@@ -2,6 +2,9 @@
 using System.Collections;
 using UnityEngine;
 using Unity.Networking.Transport;
+using Unity.Collections;
+using NetworkMessages;
+using System.Text;
 
 public class NetworkBattleSystem : MonoBehaviour
 {
@@ -29,21 +32,35 @@ public class NetworkBattleSystem : MonoBehaviour
 
     public void StartBattle()
     {
+        serverIP = BattleData.enemyID;
+        enemyTrainerName = BattleData.playerName;
+
+        m_Driver = NetworkDriver.Create();
+        m_Connection = default(NetworkConnection);
+        var endpoint = NetworkEndPoint.Parse(serverIP, serverPort);
+        m_Connection = m_Driver.Connect(endpoint);
+
         StartCoroutine(SetupBattle());
     }
 
     private IEnumerator SetupBattle()
     {
+        //Set up player
         playerUnit.Setup();
-        enemyUnit.Setup();
         playerHud.SetData(playerUnit.Pokemon);
+        //Set up opponent
+        var baseMon = PokemonBase.ReadBaseMonString(BattleData.pokemonName);
+        enemyUnit.Pokemon = new Pokemon(baseMon, BattleData.Lvl);
+        enemyUnit.Pokemon.HP = BattleData.hp;
+        enemyUnit.Setup();
         enemyHud.SetData(enemyUnit.Pokemon);
 
         dialogBox.SetMovesNames(playerUnit.Pokemon.Moves);
 
         yield return dialogBox.TypeDialog($" {enemyTrainerName}'s { enemyUnit.Pokemon.Base.Name} wants to battle.");
 
-        PlayerAction();
+        //PlayerAction();
+        state = BattleData.turn;
     }
     void PlayerAction()
     {
@@ -61,6 +78,8 @@ public class NetworkBattleSystem : MonoBehaviour
 
     public void HandleUpdate()
     {
+        m_Driver.ScheduleUpdate().Complete();
+
         switch (state)
         {
             case BattleState.PlayerAction:
@@ -70,6 +89,7 @@ public class NetworkBattleSystem : MonoBehaviour
                 HandleMoveSelection();
                 break;
             case BattleState.EnemyMove:
+                HandleEnemyAction();
                 break;
         }
 
@@ -117,10 +137,42 @@ public class NetworkBattleSystem : MonoBehaviour
         }
     }
 
+    void HandleEnemyAction()
+    {
+        if (!m_Connection.IsCreated)
+        {
+            return;
+        }
+
+        DataStreamReader stream;
+        NetworkEvent.Type cmd;
+        cmd = m_Connection.PopEvent(m_Driver, out stream);
+        while (cmd != NetworkEvent.Type.Empty)
+        {
+            if (cmd == NetworkEvent.Type.Connect)
+            {
+                //OnConnect();
+            }
+            else if (cmd == NetworkEvent.Type.Data)
+            {
+                OnData(stream);
+            }
+            else if (cmd == NetworkEvent.Type.Disconnect)
+            {
+                OnBattleOver(true);
+            }
+
+            cmd = m_Connection.PopEvent(m_Driver, out stream);
+        }
+
+    }
+
+
     IEnumerator PerformPlayerMove()
     {
         state = BattleState.Busy;
         var move = playerUnit.Pokemon.Moves[currentMove];
+        bool hit;
         if (move.PP == 0)
         {
             move = PokemonBase.DefaultMove;
@@ -148,13 +200,18 @@ public class NetworkBattleSystem : MonoBehaviour
                 yield return enemyHud.UpdateHP();
                 yield return ShowDamageDetails(damageDetails);
             }
+            hit = true;
         }
         else
         {
             yield return dialogBox.TypeDialog($" {enemyTrainerName}'s {enemyUnit.Pokemon.Base.Name} avoided the attack!!");
+            hit = false;
         }
 
-        if (enemyUnit.Pokemon.HP <= 0)
+        //Send To Server
+        SendMoveToServer(move, hit);
+
+        if (enemyUnit.Pokemon.HP <= 0) // Win
         {
             yield return dialogBox.TypeDialog($" {enemyTrainerName}'s {enemyUnit.Pokemon.Base.Name} Fainted!!");
             enemyUnit.PlayFaintAnimation();
@@ -162,16 +219,18 @@ public class NetworkBattleSystem : MonoBehaviour
             yield return StartCoroutine(RewardPlayer());
             OnBattleOver(true);
         }
+        else // keep going
+        {
+            state = BattleState.EnemyMove;
+        }
     }
 
-    IEnumerator EnemyMove()
+    IEnumerator PerformEnemyMove(Move move, bool hit)
     {
-        state = BattleState.EnemyMove;
-
-        var move = enemyUnit.Pokemon.GetAIMove(playerUnit.Pokemon);
+        state = BattleState.Busy;
         yield return dialogBox.TypeDialog($" {enemyTrainerName}'s {enemyUnit.Pokemon.Base.Name} used {move.Base.Name}!!");
 
-        if (move.Base.Accuracy >= UnityEngine.Random.Range(0, 100))
+        if (hit)
         {
             enemyUnit.PlayAttackAnimation();
             yield return new WaitForSeconds(1.0f);
@@ -201,6 +260,10 @@ public class NetworkBattleSystem : MonoBehaviour
 
             yield return new WaitForSeconds(2f);
             OnBattleOver(false);
+        }
+        else
+        {
+            PlayerAction();
         }
     }
     IEnumerator ShowDamageDetails(DamageDetails damageDetails)
@@ -286,5 +349,44 @@ public class NetworkBattleSystem : MonoBehaviour
                 target.Pokemon.ApplyStatus(move.Base.Effects.Boosts);
             }
         }
+    }
+
+    void SendMoveToServer(Move move, bool hit)
+    {
+        var movemsg = new MoveMessage();
+        movemsg.MoveName = move.Base.name;
+        movemsg.hit = hit;
+
+        string message = JsonUtility.ToJson(movemsg);
+        var writer = m_Driver.BeginSend(m_Connection);
+        NativeArray<byte> bytes = new NativeArray<byte>(Encoding.ASCII.GetBytes(message), Allocator.Temp);
+        writer.WriteBytes(bytes);
+        m_Driver.EndSend(writer);
+    }
+
+    void OnData(DataStreamReader stream)
+    {
+        NativeArray<byte> bytes = new NativeArray<byte>(stream.Length, Allocator.Temp);
+        stream.ReadBytes(bytes);
+        string recMsg = Encoding.ASCII.GetString(bytes.ToArray());
+        MessageHeader header = JsonUtility.FromJson<MessageHeader>(recMsg);
+
+        switch (header.type)
+        {
+            case MessageType.MOVE_MSG: //Move Received
+                var mMsg = JsonUtility.FromJson<MoveMessage>(recMsg);
+                MoveBase mBase = MoveBaseList.GetMoveBase(mMsg.MoveName);
+                Move move = new Move(mBase);
+                StartCoroutine(PerformEnemyMove(move, mMsg.hit));
+                break;
+            default:
+                Debug.Log("Unrecognized message received!");
+                break;
+        }
+    }
+
+    public void OnDestroy()
+    {
+        m_Driver.Dispose();
     }
 }
