@@ -12,7 +12,7 @@ public class ServerManager : MonoBehaviour
 {
     private NetworkDriver m_Driver;
     private NativeList<NetworkConnection> m_Connections;
-    private ushort serverPort;
+    public ushort serverPort = 12345;
 
     public List<PlayerMessage> playerMessages =
         new List<PlayerMessage>();
