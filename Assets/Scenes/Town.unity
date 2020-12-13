@@ -49411,9 +49411,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   glow: {fileID: 2039334326}
-  serverIP: 
+  serverIP: 3.22.224.12
   serverPort: 12345
-  localID: 
 --- !u!61 &2070657609
 BoxCollider2D:
   m_ObjectHideFlags: 0
