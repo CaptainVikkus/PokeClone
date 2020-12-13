@@ -8,7 +8,8 @@ namespace NetworkMessages
     {
         PLAYER_MSG,
         BATTLE_MSG,
-        MOVE_MSG
+        MOVE_MSG,
+        HEARTBEAT
     }
 
     [System.Serializable]

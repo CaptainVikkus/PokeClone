@@ -7,6 +7,7 @@ using Unity.Collections;
 using System.Text;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
+using System;
 
 public class MatchmakingController : MonoBehaviour
 {
@@ -29,6 +30,15 @@ public class MatchmakingController : MonoBehaviour
         m_Connection = m_Driver.Connect(endpoint);
 
         StartCoroutine(GetIPAddress());
+        StartCoroutine(Heartbeat());
+    }
+
+    private IEnumerator Heartbeat()
+    {
+        var m = new MessageHeader();
+        m.type = MessageType.HEARTBEAT;
+        SendToServer(JsonUtility.ToJson(m));
+        yield return new WaitForSeconds(1);
     }
 
     void AddToLobby()
