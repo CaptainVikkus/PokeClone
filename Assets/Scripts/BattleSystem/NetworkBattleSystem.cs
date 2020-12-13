@@ -26,6 +26,7 @@ public class NetworkBattleSystem : MonoBehaviour
     string connectionID;
     string enemyID;
     string enemyTrainerName;
+    bool connected = false;
 
     public NetworkDriver m_Driver;
     public NetworkConnection m_Connection;
@@ -52,6 +53,17 @@ public class NetworkBattleSystem : MonoBehaviour
 
         Debug.Log("Address:" + endpoint.Address);
         Assert.IsTrue(m_Connection.IsCreated);
+
+        StartCoroutine(FindServer(endpoint));
+    }
+
+    private IEnumerator FindServer(NetworkEndPoint endpoint)
+    {
+        while (!connected)
+        {
+            m_Connection = m_Driver.Connect(endpoint);
+            yield return new WaitForEndOfFrame();
+        }
     }
 
     public void StartBattle()
@@ -424,6 +436,7 @@ public class NetworkBattleSystem : MonoBehaviour
     void OnConnect()
     {
         Debug.Log("We are now connected to the server");
+        connected = true;
         //StartCoroutine(Heartbeat());
     }
     void OnDisconnect()
