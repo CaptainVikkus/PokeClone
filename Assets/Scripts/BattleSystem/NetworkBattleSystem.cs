@@ -65,8 +65,10 @@ public class NetworkBattleSystem : MonoBehaviour
 
     private IEnumerator FindServer(NetworkEndPoint endpoint)
     {
-        while (m_Connection.GetState(m_Driver) == NetworkConnection.State.Connecting)
+        while (m_Connection.GetState(m_Driver) != NetworkConnection.State.Connected)
         {
+            if (m_Connection.GetState(m_Driver) == NetworkConnection.State.Disconnected)
+            { break; }
             //m_Connection = m_Driver.Connect(endpoint);
             yield return dialogBox.TypeDialog($" Connecting to battle.");
         }
@@ -432,6 +434,12 @@ public class NetworkBattleSystem : MonoBehaviour
             return;
         }
 
+        var c = m_Driver.Accept();
+        if (c != default(NetworkConnection))
+        {
+            OnConnect(c);
+        }
+
         DataStreamReader stream;
         NetworkEvent.Type cmd;
         cmd = m_Connection.PopEvent(m_Driver, out stream);
@@ -439,7 +447,7 @@ public class NetworkBattleSystem : MonoBehaviour
         {
             if (cmd == NetworkEvent.Type.Connect)
             {
-                OnConnect();
+                OnConnect(m_Connection);
             }
             else if (cmd == NetworkEvent.Type.Data)
             {
@@ -454,9 +462,10 @@ public class NetworkBattleSystem : MonoBehaviour
         }
     }
 
-    void OnConnect()
+    void OnConnect(NetworkConnection c)
     {
         Debug.Log("We are now connected to the Battle Server");
+        m_Connection = c;
         connected = true;
         //StartCoroutine(Heartbeat());
     }
