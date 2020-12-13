@@ -29,6 +29,8 @@ public class ServerManager : MonoBehaviour
             m_Driver.Listen();
 
         m_Connections = new NativeList<NetworkConnection>(16, Allocator.Persistent);
+
+        StartCoroutine(Heartbeat());
     }
 
     // Update is called once per frame
@@ -123,6 +125,9 @@ public class ServerManager : MonoBehaviour
                 Debug.Log("Player message received!: " + pMsg.playerName);
                 UpdateLobby(pMsg, i);
                 break;
+            case MessageType.HEARTBEAT:
+                Debug.Log("Heartbeat received");
+                break;
             default:
                 Debug.Log("SERVER ERROR: Unrecognized message received!");
                 break;
@@ -180,4 +185,24 @@ public class ServerManager : MonoBehaviour
         m_Driver.EndSend(writer);
     }
 
+    void SendToClient(string message, NetworkConnection c)
+    {
+        var writer = m_Driver.BeginSend(NetworkPipeline.Null, c);
+        NativeArray<byte> bytes = new NativeArray<byte>(Encoding.ASCII.GetBytes(message), Allocator.Temp);
+        writer.WriteBytes(bytes);
+        m_Driver.EndSend(writer);
+    }
+
+    private IEnumerator Heartbeat()
+    {
+        for (int i = 0; i < m_Connections.Length; i++)
+        {
+            Assert.IsTrue(m_Connections[i].IsCreated);
+
+            var m = new MessageHeader();
+            m.type = MessageType.HEARTBEAT;
+            SendToClient(JsonUtility.ToJson(m), m_Connections[i]);
+        }
+        yield return new WaitForSeconds(1);
+    }
 }

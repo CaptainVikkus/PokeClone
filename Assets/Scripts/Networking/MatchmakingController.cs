@@ -30,7 +30,6 @@ public class MatchmakingController : MonoBehaviour
         m_Connection = m_Driver.Connect(endpoint);
 
         StartCoroutine(GetIPAddress());
-        StartCoroutine(Heartbeat());
     }
 
     private IEnumerator Heartbeat()
@@ -57,6 +56,7 @@ public class MatchmakingController : MonoBehaviour
     void OnConnect()
     {
         Debug.Log("We are now connected to the server");
+        StartCoroutine(Heartbeat());
     }
 
     void OnDisconnect()
@@ -79,7 +79,7 @@ public class MatchmakingController : MonoBehaviour
 
         switch (header.type)
         {
-            case MessageType.PLAYER_MSG:
+            case MessageType.HEARTBEAT:
                 break;
             case MessageType.BATTLE_MSG:
                 var bMsg = JsonUtility.FromJson<BattleMessage>(recMsg);
