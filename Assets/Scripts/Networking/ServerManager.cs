@@ -37,7 +37,7 @@ public class ServerManager : MonoBehaviour
     {
         while(this.isActiveAndEnabled)
         {
-            Debug.Log("Beat Start");
+            //Debug.Log("Beat Start");
             for (int i = 0; i < m_Connections.Length; i++)
             {
                 Assert.IsTrue(m_Connections[i].IsCreated);
@@ -127,9 +127,6 @@ public class ServerManager : MonoBehaviour
     {
         m_Connections.Add(c);
         Debug.Log("Accepted a connection");
-        var m = new MessageHeader();
-        m.type = MessageType.HEARTBEAT;
-        SendToClient(JsonUtility.ToJson(m), c);
     }
 
     void OnData(DataStreamReader stream, int i)

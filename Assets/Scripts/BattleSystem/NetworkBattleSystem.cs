@@ -5,6 +5,7 @@ using Unity.Networking.Transport;
 using Unity.Collections;
 using NetworkMessages;
 using System.Text;
+using UnityEngine.Assertions;
 
 public class NetworkBattleSystem : MonoBehaviour
 {
@@ -32,13 +33,17 @@ public class NetworkBattleSystem : MonoBehaviour
 
     public void StartBattle()
     {
+        Debug.Log("Enemy IP: " + BattleData.enemyID + " : " + serverPort);
         serverIP = BattleData.enemyID;
         enemyTrainerName = BattleData.playerName;
 
         m_Driver = NetworkDriver.Create();
+        m_Driver.Listen();
         m_Connection = default(NetworkConnection);
         var endpoint = NetworkEndPoint.Parse(serverIP, serverPort);
         m_Connection = m_Driver.Connect(endpoint);
+
+        Assert.IsTrue(m_Connection.IsCreated);
 
         StartCoroutine(SetupBattle());
     }
@@ -61,6 +66,8 @@ public class NetworkBattleSystem : MonoBehaviour
 
         //PlayerAction();
         state = BattleData.turn;
+        if (state == BattleState.PlayerAction) { PlayerAction(); }
+        else { }
     }
     void PlayerAction()
     {
@@ -97,14 +104,14 @@ public class NetworkBattleSystem : MonoBehaviour
 
     private void HandleMoveSelection()
     {
-        if (Input.GetKeyDown(KeyCode.RightArrow))
+        if (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D))
         {
             if (currentMove < playerUnit.Pokemon.Moves.Count - 1)
             {
                 ++currentMove;
             }
         }
-        else if (Input.GetKeyDown(KeyCode.LeftArrow))
+        else if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A))
         {
             if (currentMove > 0)
             {
@@ -112,14 +119,14 @@ public class NetworkBattleSystem : MonoBehaviour
             }
         }
 
-        else if (Input.GetKeyDown(KeyCode.DownArrow))
+        else if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S))
         {
             if (currentMove < playerUnit.Pokemon.Moves.Count - 2)
             {
                 currentMove += 2;
             }
         }
-        else if (Input.GetKeyDown(KeyCode.UpArrow))
+        else if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W))
         {
             if (currentMove > 1)
             {
@@ -131,6 +138,10 @@ public class NetworkBattleSystem : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Z))
         {
+            if (!m_Connection.IsCreated)
+            {
+                return;
+            }
             dialogBox.EnableMoveSelector(false);
             dialogBox.EnableDialogText(true);
             StartCoroutine(PerformPlayerMove());
@@ -383,6 +394,18 @@ public class NetworkBattleSystem : MonoBehaviour
                 Debug.Log("Unrecognized message received!");
                 break;
         }
+    }
+
+    private void Update()
+    {
+        m_Driver.ScheduleUpdate().Complete();
+
+        if (m_Connection.IsCreated)
+        {
+            return;
+        }
+
+        m_Connection = m_Driver.Accept();
     }
 
     public void OnDestroy()
