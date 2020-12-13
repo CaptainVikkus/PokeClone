@@ -35,7 +35,7 @@ public class NetworkBattleSystem : MonoBehaviour
 
     private void Start()
     {
-        battleServer = GetComponent<NetworkBattleServer>();
+        //battleServer = GetComponent<NetworkBattleServer>();
 
         Debug.Log("Enemy IP: " + BattleData.enemyID + " : " + serverPort);
         serverIP = BattleData.enemyID;
@@ -43,6 +43,12 @@ public class NetworkBattleSystem : MonoBehaviour
 
         //Setup Driver
         m_Driver = NetworkDriver.Create();
+        var entrypoint = NetworkEndPoint.AnyIpv4;
+        entrypoint.Port = serverPort;
+        if (m_Driver.Bind(entrypoint) != 0)
+            Debug.Log("Failed to bind to port " + serverPort);
+        else
+            m_Driver.Listen();
 
         //Setup Connection
         m_Connection = default(NetworkConnection);
@@ -361,10 +367,23 @@ public class NetworkBattleSystem : MonoBehaviour
         }
     }
 
+    //void SendMoveToServer(Move move, bool hit)
+    //{
+    //    Debug.Log("Sent move to Battle Server");
+    //    SendMoveToClient(move, hit, m_Connection);
+    //}
+
     void SendMoveToServer(Move move, bool hit)
     {
-        Debug.Log("Sent move to Battle Server");
-        battleServer.SendMove(move, hit);
+        var movemsg = new MoveMessage();
+        movemsg.MoveName = move.Base.name;
+        movemsg.hit = hit;
+
+        string message = JsonUtility.ToJson(movemsg);
+        var writer = m_Driver.BeginSend(NetworkPipeline.Null, m_Connection);
+        NativeArray<byte> bytes = new NativeArray<byte>(Encoding.ASCII.GetBytes(message), Allocator.Temp);
+        writer.WriteBytes(bytes);
+        m_Driver.EndSend(writer);
     }
 
     void SendHeartBeat()
