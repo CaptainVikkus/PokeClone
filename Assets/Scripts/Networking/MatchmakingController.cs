@@ -32,14 +32,6 @@ public class MatchmakingController : MonoBehaviour
         StartCoroutine(GetIPAddress());
     }
 
-    private IEnumerator Heartbeat()
-    {
-        var m = new MessageHeader();
-        m.type = MessageType.HEARTBEAT;
-        SendToServer(JsonUtility.ToJson(m));
-        yield return new WaitForSeconds(1);
-    }
-
     void AddToLobby()
     {
         //Build PlayerMsg
@@ -57,6 +49,14 @@ public class MatchmakingController : MonoBehaviour
     {
         Debug.Log("We are now connected to the server");
         StartCoroutine(Heartbeat());
+    }
+
+    private IEnumerator Heartbeat()
+    {
+        var m = new MessageHeader();
+        m.type = MessageType.HEARTBEAT;
+        SendToServer(JsonUtility.ToJson(m));
+        yield return new WaitForSeconds(1);
     }
 
     void OnDisconnect()
@@ -80,6 +80,7 @@ public class MatchmakingController : MonoBehaviour
         switch (header.type)
         {
             case MessageType.HEARTBEAT:
+                Debug.Log("Heartbeat");
                 break;
             case MessageType.BATTLE_MSG:
                 var bMsg = JsonUtility.FromJson<BattleMessage>(recMsg);

@@ -109,6 +109,9 @@ public class ServerManager : MonoBehaviour
     {
         m_Connections.Add(c);
         Debug.Log("Accepted a connection");
+        var m = new MessageHeader();
+        m.type = MessageType.HEARTBEAT;
+        SendToClient(JsonUtility.ToJson(m), c);
     }
 
     void OnData(DataStreamReader stream, int i)
