@@ -59,7 +59,7 @@ public class NetworkBattleServer : MonoBehaviour
         for (int i = 0; i < m_Connections.Length; i++)
         {
             SendMoveToClient(move, hit, m_Connections[i]);
-            Debug.Log("Move Sent");
+            Debug.Log("Move Sent to: " + m_Connections[i].InternalId);
         }
     }
 
@@ -99,7 +99,7 @@ public class NetworkBattleServer : MonoBehaviour
         //get the internal id
         string id = m_Connections[connection].InternalId.ToString();
         //delete the connection
-        Debug.Log("Client disconnected from Battle Server");
+        Debug.Log("Client " + id + " disconnected from Battle Server");
         m_Connections[connection] = default(NetworkConnection);
     }
 

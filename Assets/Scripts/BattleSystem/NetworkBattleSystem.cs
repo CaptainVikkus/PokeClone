@@ -392,6 +392,7 @@ public class NetworkBattleSystem : MonoBehaviour
                 var mMsg = JsonUtility.FromJson<MoveMessage>(recMsg);
                 MoveBase mBase = MoveBaseList.GetMoveBase(mMsg.MoveName);
                 Move move = new Move(mBase);
+                Debug.Log("Move %d Received in State %d", mMsg.MoveName, state);
                 if (state == BattleState.EnemyMove) { StartCoroutine(PerformEnemyMove(move, mMsg.hit)); }
                 break;
             case MessageType.HEARTBEAT:
