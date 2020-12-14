@@ -169,6 +169,9 @@ public class ServerManager : MonoBehaviour
             case MessageType.MOVE_MSG:
                 SendMove(recMsg, i);
                 break;
+            case MessageType.DISCONNECT:
+                OnDisconnect(i);
+                break;
             default:
                 Debug.Log("SERVER ERROR: Unrecognized message received!");
                 break;

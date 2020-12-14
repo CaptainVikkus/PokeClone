@@ -9,7 +9,8 @@ namespace NetworkMessages
         PLAYER_MSG,
         BATTLE_MSG,
         MOVE_MSG,
-        HEARTBEAT
+        HEARTBEAT,
+        DISCONNECT
     }
 
     [System.Serializable]
