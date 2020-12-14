@@ -167,9 +167,11 @@ public class ServerManager : MonoBehaviour
                 AddBattle(bMsg, i);
                 break;
             case MessageType.MOVE_MSG:
+                Debug.Log("Move received");
                 SendMove(recMsg, i);
                 break;
             case MessageType.DISCONNECT:
+                Debug.Log("Disconnection Received");
                 OnDisconnect(i);
                 break;
             default:
