@@ -336,5 +336,5 @@ MonoBehaviour:
   playerHud: {fileID: 1732803039}
   enemyHud: {fileID: 1732803038}
   dialogBox: {fileID: 1732803037}
-  serverIP: 3.129.7.162
+  serverIP: 3.131.152.35
   serverPort: 12345

@@ -70,6 +70,8 @@ public class MatchmakingController : MonoBehaviour
 
     public void OnDestroy()
     {
+        m_Connection.Disconnect(m_Driver);
+        OnDisconnect();
         m_Driver.Dispose();
     }
 
