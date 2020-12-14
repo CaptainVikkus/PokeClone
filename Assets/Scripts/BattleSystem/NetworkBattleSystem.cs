@@ -37,41 +37,15 @@ public class NetworkBattleSystem : MonoBehaviour
     {
         //battleServer = GetComponent<NetworkBattleServer>();
 
-        Debug.Log("Enemy IP: " + BattleData.enemyID + " : " + serverPort);
-        serverIP = BattleData.enemyID;
         enemyTrainerName = BattleData.playerName;
 
-        //Setup Driver
         m_Driver = NetworkDriver.Create();
-        NetworkEndPoint endPoint;
-        if (BattleData.turn)
-        {
-            Debug.Log("Loaded as Server");
-            endPoint = NetworkEndPoint.AnyIpv4;
-            endPoint.Port = serverPort;
-            if (m_Driver.Bind(endPoint) != 0)
-                Debug.Log("Failed to bind to port " + serverPort);
-            else
-                m_Driver.Listen();
+        m_Connection = default(NetworkConnection);
+        var endpoint = NetworkEndPoint.Parse(serverIP, serverPort);
+        m_Connection = m_Driver.Connect(endpoint);
 
-            m_Connection = new NetworkConnection();
-        }
-        else
-        {
-            Debug.Log("Loaded as Client");
-            //Setup Connection
-            m_Connection = default(NetworkConnection);
-            //var endpoint = NetworkEndPoint.LoopbackIpv4;
-            //endpoint.Port = serverPort;
-            endPoint = NetworkEndPoint.Parse(serverIP, serverPort);
-            m_Connection = m_Driver.Connect(endPoint);
-
-            Debug.Log("Address:" + endPoint.Address);
-            Assert.IsTrue(m_Connection.IsCreated);
-
-        }
         StartCoroutine(FindServer());
-    }
+     }
 
     private IEnumerator FindServer()
     {
@@ -375,12 +349,6 @@ public class NetworkBattleSystem : MonoBehaviour
         }
     }
 
-    //void SendMoveToServer(Move move, bool hit)
-    //{
-    //    Debug.Log("Sent move to Battle Server");
-    //    SendMoveToClient(move, hit, m_Connection);
-    //}
-
     void SendMoveToServer(Move move, bool hit)
     {
         var movemsg = new MoveMessage();
@@ -388,6 +356,19 @@ public class NetworkBattleSystem : MonoBehaviour
         movemsg.hit = hit;
 
         string message = JsonUtility.ToJson(movemsg);
+        var writer = m_Driver.BeginSend(NetworkPipeline.Null, m_Connection);
+        NativeArray<byte> bytes = new NativeArray<byte>(Encoding.ASCII.GetBytes(message), Allocator.Temp);
+        writer.WriteBytes(bytes);
+        m_Driver.EndSend(writer);
+    }
+
+    void SendBattleMessage()
+    {
+        var bMsg = new BattleMessage();
+        bMsg.enemyID = BattleData.playerName;
+        bMsg.playerName = SaveSystem.currentPlayer;
+
+        string message = JsonUtility.ToJson(bMsg);
         var writer = m_Driver.BeginSend(NetworkPipeline.Null, m_Connection);
         NativeArray<byte> bytes = new NativeArray<byte>(Encoding.ASCII.GetBytes(message), Allocator.Temp);
         writer.WriteBytes(bytes);
@@ -433,15 +414,8 @@ public class NetworkBattleSystem : MonoBehaviour
 
     void OnConnect(NetworkConnection c)
     {
-        if (BattleData.turn) 
-        {  //Server only
-            Debug.Log("Client to the Battle Server");
-            m_Connection = c;
-        }
-        else
-        {
-            Debug.Log("We are now connected to the Battle Server");
-        }
+        Debug.Log("We are now connected to the Battle Server");
+        SendBattleMessage();
         connected = true;
         //StartCoroutine(Heartbeat());
     }
@@ -457,39 +431,14 @@ public class NetworkBattleSystem : MonoBehaviour
     {
         m_Driver.Dispose();
     }
-    void HandleStreamServer()
-    {
-        NetworkConnection c = m_Driver.Accept();
-        if (c != default(NetworkConnection))
-        {
-            OnConnect(c);
-        }
-
-        Assert.IsTrue(m_Connection.IsCreated);
-        DataStreamReader stream;
-        NetworkEvent.Type cmd;
-        cmd = m_Driver.PopEventForConnection(m_Connection, out stream);
-        while (cmd != NetworkEvent.Type.Empty)
-        {
-            if (cmd == NetworkEvent.Type.Connect)
-            {
-                OnConnect(m_Connection);
-            }
-            else if (cmd == NetworkEvent.Type.Data)
-            {
-                OnData(stream);
-            }
-            else if (cmd == NetworkEvent.Type.Disconnect)
-            {
-                OnDisconnect();
-            }
-
-            cmd = m_Driver.PopEventForConnection(m_Connection, out stream);
-        }
-    }
-
     void HandleStreamClient()
     {
+    }
+
+    private void Update()
+    {
+        m_Driver.ScheduleUpdate().Complete();
+
         if (!m_Connection.IsCreated)
         {
             return;
@@ -502,29 +451,18 @@ public class NetworkBattleSystem : MonoBehaviour
         {
             if (cmd == NetworkEvent.Type.Connect)
             {
-                Debug.Log("Connect");
                 OnConnect(m_Connection);
             }
             else if (cmd == NetworkEvent.Type.Data)
             {
-                Debug.Log("Data");
                 OnData(stream);
             }
             else if (cmd == NetworkEvent.Type.Disconnect)
             {
-                Debug.Log("Disconnect");
                 OnDisconnect();
             }
 
             cmd = m_Connection.PopEvent(m_Driver, out stream);
         }
-    }
-
-    private void Update()
-    {
-        m_Driver.ScheduleUpdate().Complete();
-
-        if (BattleData.turn) { HandleStreamServer(); }
-        else { HandleStreamClient(); }
     }
 }

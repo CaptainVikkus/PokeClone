@@ -8,17 +8,29 @@ using UnityEngine.Assertions;
 using System.Text;
 using System;
 
+
+public struct Player
+{
+    public PlayerMessage data;
+}
+
+public struct Battle
+{
+    public BattleMessage data;
+    public int playerID;
+}
+
 public class ServerManager : MonoBehaviour
 {
     private NetworkDriver m_Driver;
     private NativeList<NetworkConnection> m_Connections;
     public ushort serverPort = 12345;
 
-    public List<PlayerMessage> playerMessages =
+    public List<PlayerMessage> matchLobby =
         new List<PlayerMessage>();
 
-    public List<PlayerMessage> battle =
-        new List<PlayerMessage>();
+    public List<Battle> battleLobby =
+        new List<Battle>();
 
     // Start is called before the first frame update
     void Start()
@@ -107,16 +119,16 @@ public class ServerManager : MonoBehaviour
         }
 
         //Check PlayerMessages for pairs
-        if (playerMessages.Count > 1)
+        if (matchLobby.Count > 1)
         {
             //Build a Match
             bool first = (UnityEngine.Random.value > 0.5f); //random true false
-            var p1 = playerMessages[0];
-            var p2 = playerMessages[1];
+            var p1 = matchLobby[0];
+            var p2 = matchLobby[1];
             SendBattleMessage(p2, first, FindConnection(p1.serverID)); //Send Enemy p2 to Player p1
             SendBattleMessage(p1, !first, FindConnection(p2.serverID)); //Send Enemy p1 to Player p2
-            playerMessages.RemoveAt(0);//remove player1
-            playerMessages.RemoveAt(0);//remove player2
+            matchLobby.RemoveAt(0);//remove player1
+            matchLobby.RemoveAt(0);//remove player2
         }
     }
 
@@ -149,6 +161,14 @@ public class ServerManager : MonoBehaviour
             case MessageType.HEARTBEAT:
                 Debug.Log("Heartbeat received from: " + m_Connections[i].InternalId);
                 break;
+            case MessageType.BATTLE_MSG:
+                BattleMessage bMsg = JsonUtility.FromJson<BattleMessage>(recMsg);
+                Debug.Log("Battle started for: " + bMsg.playerName);
+                AddBattle(bMsg, i);
+                break;
+            case MessageType.MOVE_MSG:
+                SendMove(recMsg, i);
+                break;
             default:
                 Debug.Log("SERVER ERROR: Unrecognized message received!");
                 break;
@@ -158,11 +178,11 @@ public class ServerManager : MonoBehaviour
     private void UpdateLobby(PlayerMessage pMsg, int i)
     {
         //Check for duplicate (i.e. leaving player)
-        foreach (var player in playerMessages)
+        foreach (var player in matchLobby)
         {
             if (player.playerName == pMsg.playerName)
             {
-                playerMessages.Remove(player);
+                matchLobby.Remove(player);
                 Debug.Log("Player Removed!: " + pMsg.playerName);
                 return;
             }
@@ -170,18 +190,52 @@ public class ServerManager : MonoBehaviour
         //No Player Found
         Debug.Log("Player Added!:" + pMsg.playerName);
         pMsg.serverID = m_Connections[i].InternalId;
-        playerMessages.Add(pMsg);
+        matchLobby.Add(pMsg);
+    }
+
+    private void AddBattle(BattleMessage bMsg, int i)
+    {
+        var battle = new Battle();
+        battle.data = bMsg;
+        battle.playerID = m_Connections[i].InternalId;
+        battleLobby.Add(battle);
+    }
+
+    void SendMove(string move, int i)
+    {
+        string enemy = "";
+        //Find Player's Enemy
+        foreach (var battle in battleLobby)
+        {
+            if (battle.playerID == m_Connections[i].InternalId)
+            {
+                enemy = battle.data.enemyID;
+                break;
+            }
+        }
+        if (enemy != "")
+        {
+            //Send Move to Enemy
+            foreach (var battle in battleLobby)
+            {
+                if (battle.data.playerName == enemy)
+                {
+                    SendToClient(move, FindConnection(battle.playerID));
+                    return;
+                }
+            }
+        }
     }
 
     void OnDisconnect(int connection)
     {
         //get the internal id
         int id = m_Connections[connection].InternalId;
-        if (playerMessages.Count > 0)
+        if (matchLobby.Count > 0)
         {
-            foreach (var player in playerMessages)
+            foreach (var player in matchLobby)
             {
-                if (player.serverID == id) { playerMessages.Remove(player); }
+                if (player.serverID == id) { matchLobby.Remove(player); }
             }
         }
         //delete the connection
