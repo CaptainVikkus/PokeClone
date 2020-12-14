@@ -433,8 +433,15 @@ public class NetworkBattleSystem : MonoBehaviour
 
     void OnConnect(NetworkConnection c)
     {
-        Debug.Log("We are now connected to the Battle Server");
-        if (BattleData.turn) { m_Connection = c; } //Server only
+        if (BattleData.turn) 
+        {  //Server only
+            Debug.Log("Client to the Battle Server");
+            m_Connection = c;
+        }
+        else
+        {
+            Debug.Log("We are now connected to the Battle Server");
+        }
         connected = true;
         //StartCoroutine(Heartbeat());
     }
@@ -452,7 +459,7 @@ public class NetworkBattleSystem : MonoBehaviour
     }
     void HandleStreamServer()
     {
-        var c = m_Driver.Accept();
+        NetworkConnection c = m_Driver.Accept();
         if (c != default(NetworkConnection))
         {
             OnConnect(c);
@@ -483,7 +490,7 @@ public class NetworkBattleSystem : MonoBehaviour
 
     void HandleStreamClient()
     {
-        if (!BattleData.turn && !m_Connection.IsCreated)
+        if (!m_Connection.IsCreated)
         {
             return;
         }
@@ -495,14 +502,17 @@ public class NetworkBattleSystem : MonoBehaviour
         {
             if (cmd == NetworkEvent.Type.Connect)
             {
+                Debug.Log("Connect");
                 OnConnect(m_Connection);
             }
             else if (cmd == NetworkEvent.Type.Data)
             {
+                Debug.Log("Data");
                 OnData(stream);
             }
             else if (cmd == NetworkEvent.Type.Disconnect)
             {
+                Debug.Log("Disconnect");
                 OnDisconnect();
             }
 
