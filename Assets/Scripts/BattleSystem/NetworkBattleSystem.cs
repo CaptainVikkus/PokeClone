@@ -26,6 +26,7 @@ public class NetworkBattleSystem : MonoBehaviour
     private void Start()
     {
         SendBattleMessage();
+        SetupBattle();
     }
 
     private IEnumerator FindServer()
