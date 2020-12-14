@@ -90,6 +90,9 @@ public class MatchmakingController : MonoBehaviour
             case MessageType.BATTLE_MSG:
                 var bMsg = JsonUtility.FromJson<BattleMessage>(recMsg);
                 BattleData.SetBattleData(bMsg);
+                var msg = new MessageHeader();
+                msg.type = MessageType.DISCONNECT;
+                SendMessage(JsonUtility.ToJson(msg));
                 OnDisconnect();
                 GameController.Instance.StartMultiplayerBattle();
                 break;
