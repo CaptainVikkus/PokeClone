@@ -53,6 +53,8 @@ public class NetworkBattleSystem : MonoBehaviour
                 Debug.Log("Failed to bind to port " + serverPort);
             else
                 m_Driver.Listen();
+
+            m_Connection = new NetworkConnection();
         }
         else
         {
@@ -429,22 +431,61 @@ public class NetworkBattleSystem : MonoBehaviour
         }
     }
 
-    private void Update()
+    void OnConnect(NetworkConnection c)
     {
-        m_Driver.ScheduleUpdate().Complete();
+        Debug.Log("We are now connected to the Battle Server");
+        if (BattleData.turn) { m_Connection = c; } //Server only
+        connected = true;
+        //StartCoroutine(Heartbeat());
+    }
+    void OnDisconnect()
+    {
+        Debug.Log("Client got disconnected from Battle Server");
+        m_Connection.Disconnect(m_Driver);
+        m_Connection = default(NetworkConnection);
+        OnBattleOver(true);
+    }
 
-        if (!m_Connection.IsCreated)
+    public void OnDestroy()
+    {
+        m_Driver.Dispose();
+    }
+    void HandleStreamServer()
+    {
+        var c = m_Driver.Accept();
+        if (c != default(NetworkConnection))
         {
-            return;
+            OnConnect(c);
         }
 
-        if (BattleData.turn) //Server
+        Assert.IsTrue(m_Connection.IsCreated);
+        DataStreamReader stream;
+        NetworkEvent.Type cmd;
+        cmd = m_Driver.PopEventForConnection(m_Connection, out stream);
+        while (cmd != NetworkEvent.Type.Empty)
         {
-            var c = m_Driver.Accept();
-            if (c != default(NetworkConnection))
+            if (cmd == NetworkEvent.Type.Connect)
             {
-                OnConnect(c);
+                OnConnect(m_Connection);
             }
+            else if (cmd == NetworkEvent.Type.Data)
+            {
+                OnData(stream);
+            }
+            else if (cmd == NetworkEvent.Type.Disconnect)
+            {
+                OnDisconnect();
+            }
+
+            cmd = m_Driver.PopEventForConnection(m_Connection, out stream);
+        }
+    }
+
+    void HandleStreamClient()
+    {
+        if (!BattleData.turn && !m_Connection.IsCreated)
+        {
+            return;
         }
 
         DataStreamReader stream;
@@ -469,22 +510,11 @@ public class NetworkBattleSystem : MonoBehaviour
         }
     }
 
-    void OnConnect(NetworkConnection c)
+    private void Update()
     {
-        Debug.Log("We are now connected to the Battle Server");
-        if (BattleData.turn) { m_Connection = c; } //Server only
-        connected = true;
-        //StartCoroutine(Heartbeat());
-    }
-    void OnDisconnect()
-    {
-        Debug.Log("Client got disconnected from Battle Server");
-        m_Connection.Disconnect(m_Driver);
-        m_Connection = default(NetworkConnection);
-    }
+        m_Driver.ScheduleUpdate().Complete();
 
-    public void OnDestroy()
-    {
-        m_Driver.Dispose();
+        if (BattleData.turn) { HandleStreamServer(); }
+        else { HandleStreamClient(); }
     }
 }
