@@ -26,7 +26,7 @@ public class NetworkBattleSystem : MonoBehaviour
     private void Start()
     {
         SendBattleMessage();
-        StartBattle();
+        //StartBattle();
     }
 
     public void StartBattle()
