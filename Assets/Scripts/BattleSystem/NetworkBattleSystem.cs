@@ -73,13 +73,8 @@ public class NetworkBattleSystem : MonoBehaviour
 
     private IEnumerator FindServer()
     {
-        while (m_Connection.GetState(m_Driver) != NetworkConnection.State.Connected)
+        while (!connected)
         {
-            if (m_Connection.GetState(m_Driver) == NetworkConnection.State.Disconnected)
-            {
-                Debug.Log("Connection Failed");
-                break;
-            }
             //m_Connection = m_Driver.Connect(endpoint);
             yield return dialogBox.TypeDialog($" Connecting to battle.");
         }
