@@ -65,13 +65,12 @@ public class MatchmakingController : MonoBehaviour
     void OnDisconnect()
     {
         Debug.Log("Client got disconnected from server");
+        m_Connection.Disconnect(m_Driver);
         m_Connection = default(NetworkConnection);
     }
 
     public void OnDestroy()
     {
-        m_Connection.Disconnect(m_Driver);
-        OnDisconnect();
         m_Driver.Dispose();
     }
 
@@ -90,6 +89,7 @@ public class MatchmakingController : MonoBehaviour
             case MessageType.BATTLE_MSG:
                 var bMsg = JsonUtility.FromJson<BattleMessage>(recMsg);
                 BattleData.SetBattleData(bMsg);
+                OnDisconnect();
                 GameController.Instance.StartMultiplayerBattle();
                 break;
             default:
