@@ -40,7 +40,7 @@ public class ServerManager : MonoBehaviour
     {
         while(this.isActiveAndEnabled)
         {
-            //Debug.Log("Beat Start");
+            Debug.Log("Beat");
             for (int i = 0; i < m_Connections.Length; i++)
             {
                 Assert.IsTrue(m_Connections[i].IsCreated);
