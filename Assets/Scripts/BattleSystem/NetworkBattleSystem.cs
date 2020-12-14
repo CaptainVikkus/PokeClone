@@ -26,17 +26,7 @@ public class NetworkBattleSystem : MonoBehaviour
     private void Start()
     {
         SendBattleMessage();
-        SetupBattle();
-    }
-
-    private IEnumerator FindServer()
-    {
-        while (!connected)
-        {
-            //m_Connection = m_Driver.Connect(endpoint);
-            yield return dialogBox.TypeDialog($" Connecting to battle.");
-        }
-        StartCoroutine(SetupBattle());
+        StartBattle();
     }
 
     public void StartBattle()
@@ -50,6 +40,8 @@ public class NetworkBattleSystem : MonoBehaviour
         enemyUnit.Pokemon.HP = BattleData.hp;
         enemyUnit.Setup();
         enemyHud.SetData(enemyUnit.Pokemon);
+
+        StartCoroutine(SetupBattle());
     }
 
     private IEnumerator SetupBattle()
