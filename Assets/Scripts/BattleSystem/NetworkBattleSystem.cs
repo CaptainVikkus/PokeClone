@@ -68,7 +68,10 @@ public class NetworkBattleSystem : MonoBehaviour
         while (m_Connection.GetState(m_Driver) != NetworkConnection.State.Connected)
         {
             if (m_Connection.GetState(m_Driver) == NetworkConnection.State.Disconnected)
-            { break; }
+            {
+                Debug.Log("Connection Failed");
+                break;
+            }
             //m_Connection = m_Driver.Connect(endpoint);
             yield return dialogBox.TypeDialog($" Connecting to battle.");
         }
