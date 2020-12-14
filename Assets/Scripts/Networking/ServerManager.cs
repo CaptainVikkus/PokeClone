@@ -187,6 +187,7 @@ public class ServerManager : MonoBehaviour
         //delete the connection
         Debug.Log("Client disconnected from server");
         m_Connections[connection].Disconnect(m_Driver);
+        m_Connections[connection] = default(NetworkConnection);
     }
 
     void SendBattleMessage(PlayerMessage enemy, bool turn, NetworkConnection c)
@@ -210,7 +211,7 @@ public class ServerManager : MonoBehaviour
 
     void SendToClient(string message, NetworkConnection c)
     {
-        var writer = m_Driver.BeginSend(NetworkPipeline.Null, c);
+        var writer = m_Driver.BeginSend(c);
         NativeArray<byte> bytes = new NativeArray<byte>(Encoding.ASCII.GetBytes(message), Allocator.Temp);
         writer.WriteBytes(bytes);
         m_Driver.EndSend(writer);

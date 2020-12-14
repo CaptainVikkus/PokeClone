@@ -484,6 +484,7 @@ public class NetworkBattleSystem : MonoBehaviour
     {
         Debug.Log("Client got disconnected from Battle Server");
         m_Connection.Disconnect(m_Driver);
+        m_Connection = default(NetworkConnection);
     }
 
     public void OnDestroy()
