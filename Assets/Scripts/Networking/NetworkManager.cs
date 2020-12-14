@@ -156,7 +156,7 @@ public class NetworkManager : MonoBehaviour
             case MessageType.BATTLE_MSG:
                 var bMsg = JsonUtility.FromJson<BattleMessage>(recMsg);
                 BattleData.SetBattleData(bMsg);
-                var msg = new MessageHeader();
+                Debug.Log("Battle Started");
                 GameController.Instance.StartMultiplayerBattle();
                 break;
             case MessageType.MOVE_MSG: //Move Received
