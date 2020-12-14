@@ -66,6 +66,7 @@ public class MatchmakingController : MonoBehaviour
     {
         Debug.Log("Client got disconnected from server");
         m_Connection.Disconnect(m_Driver);
+        StopAllCoroutines();
         m_Connection = default(NetworkConnection);
     }
 
