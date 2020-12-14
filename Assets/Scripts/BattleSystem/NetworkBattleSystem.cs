@@ -43,33 +43,35 @@ public class NetworkBattleSystem : MonoBehaviour
 
         //Setup Driver
         m_Driver = NetworkDriver.Create();
-        
+        NetworkEndPoint endPoint;
         if (BattleData.turn)
         {
-            var entrypoint = NetworkEndPoint.AnyIpv4;
-            entrypoint.Port = serverPort;
-            if (m_Driver.Bind(entrypoint) != 0)
+            Debug.Log("Loaded as Server");
+            endPoint = NetworkEndPoint.AnyIpv4;
+            endPoint.Port = serverPort;
+            if (m_Driver.Bind(endPoint) != 0)
                 Debug.Log("Failed to bind to port " + serverPort);
             else
                 m_Driver.Listen();
         }
         else
         {
+            Debug.Log("Loaded as Client");
             //Setup Connection
             m_Connection = default(NetworkConnection);
             //var endpoint = NetworkEndPoint.LoopbackIpv4;
             //endpoint.Port = serverPort;
-            var endpoint = NetworkEndPoint.Parse(serverIP, serverPort);
-            m_Connection = m_Driver.Connect(endpoint);
+            endPoint = NetworkEndPoint.Parse(serverIP, serverPort);
+            m_Connection = m_Driver.Connect(endPoint);
 
-            Debug.Log("Address:" + endpoint.Address);
+            Debug.Log("Address:" + endPoint.Address);
             Assert.IsTrue(m_Connection.IsCreated);
 
-            StartCoroutine(FindServer(endpoint));
         }
+        StartCoroutine(FindServer());
     }
 
-    private IEnumerator FindServer(NetworkEndPoint endpoint)
+    private IEnumerator FindServer()
     {
         while (m_Connection.GetState(m_Driver) != NetworkConnection.State.Connected)
         {
@@ -86,11 +88,6 @@ public class NetworkBattleSystem : MonoBehaviour
 
     public void StartBattle()
     {
-
-    }
-
-    private IEnumerator SetupBattle()
-    {
         //Set up player
         playerUnit.Setup();
         playerHud.SetData(playerUnit.Pokemon);
@@ -100,6 +97,10 @@ public class NetworkBattleSystem : MonoBehaviour
         enemyUnit.Pokemon.HP = BattleData.hp;
         enemyUnit.Setup();
         enemyHud.SetData(enemyUnit.Pokemon);
+    }
+
+    private IEnumerator SetupBattle()
+    {
 
         dialogBox.SetMovesNames(playerUnit.Pokemon.Moves);
 
