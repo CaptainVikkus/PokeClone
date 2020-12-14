@@ -9,7 +9,7 @@ public static class BattleData
     public static string pokemonName;
     public static int Lvl;
     public static int hp;
-    public static BattleState turn;
+    public static bool turn;
 
     public static void SetBattleData(NetworkMessages.BattleMessage bMsg)
     {

@@ -194,7 +194,7 @@ public class ServerManager : MonoBehaviour
         Assert.IsTrue(c.IsCreated);
 
         var bMsg = new BattleMessage();
-        bMsg.turn = turn ? BattleState.PlayerAction : BattleState.EnemyMove;
+        bMsg.turn = turn;
         bMsg.enemyID = enemy.connectionID;
         bMsg.playerName = enemy.playerName;
         bMsg.pokemonName = enemy.pokemonName;

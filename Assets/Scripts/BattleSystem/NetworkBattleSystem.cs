@@ -43,24 +43,30 @@ public class NetworkBattleSystem : MonoBehaviour
 
         //Setup Driver
         m_Driver = NetworkDriver.Create();
-        var entrypoint = NetworkEndPoint.AnyIpv4;
-        entrypoint.Port = serverPort;
-        if (m_Driver.Bind(entrypoint) != 0)
-            Debug.Log("Failed to bind to port " + serverPort);
+        
+        if (BattleData.turn)
+        {
+            var entrypoint = NetworkEndPoint.AnyIpv4;
+            entrypoint.Port = serverPort;
+            if (m_Driver.Bind(entrypoint) != 0)
+                Debug.Log("Failed to bind to port " + serverPort);
+            else
+                m_Driver.Listen();
+        }
         else
-            m_Driver.Listen();
+        {
+            //Setup Connection
+            m_Connection = default(NetworkConnection);
+            //var endpoint = NetworkEndPoint.LoopbackIpv4;
+            //endpoint.Port = serverPort;
+            var endpoint = NetworkEndPoint.Parse(serverIP, serverPort);
+            m_Connection = m_Driver.Connect(endpoint);
 
-        //Setup Connection
-        m_Connection = default(NetworkConnection);
-        //var endpoint = NetworkEndPoint.LoopbackIpv4;
-        //endpoint.Port = serverPort;
-        var endpoint = NetworkEndPoint.Parse(serverIP, serverPort);
-        m_Connection = m_Driver.Connect(endpoint);
+            Debug.Log("Address:" + endpoint.Address);
+            Assert.IsTrue(m_Connection.IsCreated);
 
-        Debug.Log("Address:" + endpoint.Address);
-        Assert.IsTrue(m_Connection.IsCreated);
-
-        StartCoroutine(FindServer(endpoint));
+            StartCoroutine(FindServer(endpoint));
+        }
     }
 
     private IEnumerator FindServer(NetworkEndPoint endpoint)
@@ -100,9 +106,8 @@ public class NetworkBattleSystem : MonoBehaviour
         yield return dialogBox.TypeDialog($" {enemyTrainerName}'s { enemyUnit.Pokemon.Base.Name} wants to battle.");
 
         //PlayerAction();
-        state = BattleData.turn;
-        if (state == BattleState.PlayerAction) { PlayerAction(); }
-        else { }
+        if (BattleData.turn) { PlayerAction(); }
+        else { state = BattleState.EnemyMove; }
     }
     void PlayerAction()
     {
@@ -437,10 +442,13 @@ public class NetworkBattleSystem : MonoBehaviour
             return;
         }
 
-        var c = m_Driver.Accept();
-        if (c != default(NetworkConnection))
+        if (BattleData.turn) //Server
         {
-            OnConnect(c);
+            var c = m_Driver.Accept();
+            if (c != default(NetworkConnection))
+            {
+                OnConnect(c);
+            }
         }
 
         DataStreamReader stream;
@@ -468,7 +476,7 @@ public class NetworkBattleSystem : MonoBehaviour
     void OnConnect(NetworkConnection c)
     {
         Debug.Log("We are now connected to the Battle Server");
-        m_Connection = c;
+        if (BattleData.turn) { m_Connection = c; } //Server only
         connected = true;
         //StartCoroutine(Heartbeat());
     }

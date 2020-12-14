@@ -42,7 +42,7 @@ namespace NetworkMessages
         public string pokemonName;
         public int Lvl;
         public int hp;
-        public BattleState turn;
+        public bool turn;
         public BattleMessage() // Constructor
         {
             type = MessageType.BATTLE_MSG;
