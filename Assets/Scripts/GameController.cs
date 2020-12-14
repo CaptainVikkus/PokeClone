@@ -12,6 +12,7 @@ public class GameController : MonoBehaviour
     [SerializeField] NetworkBattleSystem multiplayerSystem;
     [SerializeField] AudioManager audioManager;
     [SerializeField] ScreenOverlayManager overlayManager;
+    [SerializeField] NetworkManager networkManager;
 
     public Vector3 targetPlayerLocation = Vector3.zero;
     //public Vector3 prevPlayerLocation;
@@ -91,6 +92,7 @@ public class GameController : MonoBehaviour
     {
         overlayManager = ScreenOverlayManager.Instance;
         audioManager = AudioManager.Instance;
+        networkManager = NetworkManager.Instance;
 
         battleSystem = FindObjectOfType<BattleSystem>();
         if (battleSystem != null) 

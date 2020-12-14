@@ -4629,6 +4629,7 @@ MonoBehaviour:
   multiplayerSystem: {fileID: 0}
   audioManager: {fileID: 0}
   overlayManager: {fileID: 1401611041}
+  networkManager: {fileID: 0}
   targetPlayerLocation: {x: 0, y: 0, z: 0}
   onEnterEncounter:
     m_PersistentCalls:
@@ -26236,6 +26237,51 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 704574272}
   m_CullTransparentMesh: 0
+--- !u!1 &788236924
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 788236925}
+  - component: {fileID: 788236926}
+  m_Layer: 0
+  m_Name: NetworkManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &788236925
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 788236924}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.6212086, y: 0.3435904, z: 34.6895}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 9
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &788236926
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 788236924}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: de99b4e727364a140830a53b50811cf6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  serverIP: 3.131.152.35
+  serverPort: 12345
 --- !u!1 &940095932
 GameObject:
   m_ObjectHideFlags: 0
@@ -54092,8 +54138,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   glow: {fileID: 2039334326}
-  serverIP: 3.131.152.35
-  serverPort: 12345
 --- !u!61 &2070657609
 BoxCollider2D:
   m_ObjectHideFlags: 0

@@ -21,31 +21,12 @@ public class NetworkBattleSystem : MonoBehaviour
     BattleState state;
     int currentAction;
     int currentMove;
-
-    // Networking Info
-    string connectionID;
-    string enemyID;
-    string enemyTrainerName;
-    bool connected = false;
-
-    public NetworkDriver m_Driver;
-    public NetworkConnection m_Connection;
-    public string serverIP;
-    public ushort serverPort;
+    bool connected;
 
     private void Start()
     {
-        //battleServer = GetComponent<NetworkBattleServer>();
-
-        enemyTrainerName = BattleData.playerName;
-
-        m_Driver = NetworkDriver.Create();
-        m_Connection = default(NetworkConnection);
-        var endpoint = NetworkEndPoint.Parse(serverIP, serverPort);
-        m_Connection = m_Driver.Connect(endpoint);
-
-        StartCoroutine(FindServer());
-     }
+        SendBattleMessage();
+    }
 
     private IEnumerator FindServer()
     {
@@ -75,7 +56,7 @@ public class NetworkBattleSystem : MonoBehaviour
 
         dialogBox.SetMovesNames(playerUnit.Pokemon.Moves);
 
-        yield return dialogBox.TypeDialog($" {enemyTrainerName}'s { enemyUnit.Pokemon.Base.Name} wants to battle.");
+        yield return dialogBox.TypeDialog($" {BattleData.playerName}'s { enemyUnit.Pokemon.Base.Name} wants to battle.");
 
         //PlayerAction();
         if (BattleData.turn) { PlayerAction(); }
@@ -97,8 +78,6 @@ public class NetworkBattleSystem : MonoBehaviour
 
     public void HandleUpdate()
     {
-        m_Driver.ScheduleUpdate().Complete();
-
         switch (state)
         {
             case BattleState.PlayerAction:
@@ -150,10 +129,6 @@ public class NetworkBattleSystem : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Z))
         {
-            if (!m_Connection.IsCreated)
-            {
-                return;
-            }
             dialogBox.EnableMoveSelector(false);
             dialogBox.EnableDialogText(true);
             StartCoroutine(PerformPlayerMove());
@@ -161,8 +136,14 @@ public class NetworkBattleSystem : MonoBehaviour
     }
 
     void HandleEnemyAction()
-    {
-
+    {// Wait
+        if (NetworkManager.Instance.hasMove())
+        {//Build Move
+            var mMsg = NetworkManager.Instance.GetMove();
+            MoveBase mBase = MoveBaseList.GetMoveBase(mMsg.MoveName);
+            Move move = new Move(mBase);
+            StartCoroutine(PerformEnemyMove(move, mMsg.hit));
+        }
     }
 
 
@@ -202,7 +183,7 @@ public class NetworkBattleSystem : MonoBehaviour
         }
         else
         {
-            yield return dialogBox.TypeDialog($" {enemyTrainerName}'s {enemyUnit.Pokemon.Base.Name} avoided the attack!!");
+            yield return dialogBox.TypeDialog($" {BattleData.playerName}'s {enemyUnit.Pokemon.Base.Name} avoided the attack!!");
             hit = false;
         }
 
@@ -211,7 +192,7 @@ public class NetworkBattleSystem : MonoBehaviour
 
         if (enemyUnit.Pokemon.HP <= 0) // Win
         {
-            yield return dialogBox.TypeDialog($" {enemyTrainerName}'s {enemyUnit.Pokemon.Base.Name} Fainted!!");
+            yield return dialogBox.TypeDialog($" {BattleData.playerName}'s {enemyUnit.Pokemon.Base.Name} Fainted!!");
             enemyUnit.PlayFaintAnimation();
 
             yield return StartCoroutine(RewardPlayer());
@@ -226,7 +207,7 @@ public class NetworkBattleSystem : MonoBehaviour
     IEnumerator PerformEnemyMove(Move move, bool hit)
     {
         state = BattleState.Busy;
-        yield return dialogBox.TypeDialog($" {enemyTrainerName}'s {enemyUnit.Pokemon.Base.Name} used {move.Base.Name}!!");
+        yield return dialogBox.TypeDialog($" {BattleData.playerName}'s {enemyUnit.Pokemon.Base.Name} used {move.Base.Name}!!");
 
         if (hit)
         {
@@ -351,15 +332,7 @@ public class NetworkBattleSystem : MonoBehaviour
 
     void SendMoveToServer(Move move, bool hit)
     {
-        var movemsg = new MoveMessage();
-        movemsg.MoveName = move.Base.name;
-        movemsg.hit = hit;
-
-        string message = JsonUtility.ToJson(movemsg);
-        var writer = m_Driver.BeginSend(NetworkPipeline.Null, m_Connection);
-        NativeArray<byte> bytes = new NativeArray<byte>(Encoding.ASCII.GetBytes(message), Allocator.Temp);
-        writer.WriteBytes(bytes);
-        m_Driver.EndSend(writer);
+        NetworkManager.Instance.SendMove(move, hit);
     }
 
     void SendBattleMessage()
@@ -368,101 +341,6 @@ public class NetworkBattleSystem : MonoBehaviour
         bMsg.enemyID = BattleData.playerName;
         bMsg.playerName = SaveSystem.currentPlayer;
 
-        string message = JsonUtility.ToJson(bMsg);
-        var writer = m_Driver.BeginSend(NetworkPipeline.Null, m_Connection);
-        NativeArray<byte> bytes = new NativeArray<byte>(Encoding.ASCII.GetBytes(message), Allocator.Temp);
-        writer.WriteBytes(bytes);
-        m_Driver.EndSend(writer);
-    }
-
-    void SendHeartBeat()
-    {
-        var hb = new MessageHeader();
-        hb.type = MessageType.HEARTBEAT;
-        var message = JsonUtility.ToJson(hb);
-
-        var writer = m_Driver.BeginSend(NetworkPipeline.Null, m_Connection);
-        NativeArray<byte> bytes = new NativeArray<byte>(Encoding.ASCII.GetBytes(message), Allocator.Temp);
-        writer.WriteBytes(bytes);
-        m_Driver.EndSend(writer);
-    }
-
-    void OnData(DataStreamReader stream)
-    {
-        NativeArray<byte> bytes = new NativeArray<byte>(stream.Length, Allocator.Temp);
-        stream.ReadBytes(bytes);
-        string recMsg = Encoding.ASCII.GetString(bytes.ToArray());
-        MessageHeader header = JsonUtility.FromJson<MessageHeader>(recMsg);
-
-        switch (header.type)
-        {
-            case MessageType.MOVE_MSG: //Move Received
-                var mMsg = JsonUtility.FromJson<MoveMessage>(recMsg);
-                MoveBase mBase = MoveBaseList.GetMoveBase(mMsg.MoveName);
-                Move move = new Move(mBase);
-                Debug.Log("Move " + mMsg.MoveName + " Received in State" + state);
-                if (state == BattleState.EnemyMove) { StartCoroutine(PerformEnemyMove(move, mMsg.hit)); }
-                break;
-            case MessageType.HEARTBEAT:
-                Debug.Log("Hiya Neighbourino");
-                break;
-            default:
-                Debug.Log("Unrecognized message received!");
-                break;
-        }
-    }
-
-    void OnConnect(NetworkConnection c)
-    {
-        Debug.Log("We are now connected to the Battle Server");
-        SendBattleMessage();
-        connected = true;
-        //StartCoroutine(Heartbeat());
-    }
-    void OnDisconnect()
-    {
-        Debug.Log("Client got disconnected from Battle Server");
-        m_Connection.Disconnect(m_Driver);
-        m_Connection = default(NetworkConnection);
-        OnBattleOver(true);
-    }
-
-    public void OnDestroy()
-    {
-        m_Driver.Dispose();
-    }
-    void HandleStreamClient()
-    {
-    }
-
-    private void Update()
-    {
-        m_Driver.ScheduleUpdate().Complete();
-
-        if (!m_Connection.IsCreated)
-        {
-            return;
-        }
-
-        DataStreamReader stream;
-        NetworkEvent.Type cmd;
-        cmd = m_Connection.PopEvent(m_Driver, out stream);
-        while (cmd != NetworkEvent.Type.Empty)
-        {
-            if (cmd == NetworkEvent.Type.Connect)
-            {
-                OnConnect(m_Connection);
-            }
-            else if (cmd == NetworkEvent.Type.Data)
-            {
-                OnData(stream);
-            }
-            else if (cmd == NetworkEvent.Type.Disconnect)
-            {
-                OnDisconnect();
-            }
-
-            cmd = m_Connection.PopEvent(m_Driver, out stream);
-        }
+        NetworkManager.Instance.SendBattle(bMsg);
     }
 }
