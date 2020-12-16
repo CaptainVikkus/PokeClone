@@ -12,7 +12,7 @@ public class NetworkManager : MonoBehaviour
 {
     public NetworkDriver m_Driver;
     public NetworkConnection m_Connection;
-    public string serverIP;
+    private static string serverIP;
     public ushort serverPort;
     private string myIP;
 
@@ -49,15 +49,22 @@ public class NetworkManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        Debug.Log("Server IP: " + serverIP + ":" + serverPort);
+
         m_Driver = NetworkDriver.Create();
         m_Connection = default(NetworkConnection);
         var endpoint = NetworkEndPoint.Parse(serverIP, serverPort);
         m_Connection = m_Driver.Connect(endpoint);
 
-        StartCoroutine(GetIPAddress());
+        StartCoroutine(GetMyIPAddress());
     }
 
-    IEnumerator GetIPAddress()
+    public static void SetServerIP(string ip)
+    {
+        serverIP = ip;
+    }
+
+    IEnumerator GetMyIPAddress()
     {
         UnityWebRequest www = UnityWebRequest.Get("http://checkip.dyndns.org");
         yield return www.SendWebRequest();
@@ -121,6 +128,12 @@ public class NetworkManager : MonoBehaviour
     }
     void SendToServer(string message)
     {
+        if (m_Driver.GetConnectionState(m_Connection) != NetworkConnection.State.Connected)
+        {//Prevent InvalidOperationException
+            Debug.Log("Can't Send to Invalid Connection");
+            return;
+        }
+
         var writer = m_Driver.BeginSend(m_Connection);
         NativeArray<byte> bytes = new NativeArray<byte>(Encoding.ASCII.GetBytes(message), Allocator.Temp);
         writer.WriteBytes(bytes);
@@ -186,17 +199,21 @@ public class NetworkManager : MonoBehaviour
 
     public void OnDestroy()
     {
+        if (!m_Driver.IsCreated)
+            return;
+
         m_Driver.Dispose();
     }
 
     private void Update()
     {
+        if (!m_Driver.IsCreated)
+            return;
+
         m_Driver.ScheduleUpdate().Complete();
 
         if (!m_Connection.IsCreated)
-        {
             return;
-        }
 
         DataStreamReader stream;
         NetworkEvent.Type cmd;

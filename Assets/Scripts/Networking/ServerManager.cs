@@ -200,6 +200,16 @@ public class ServerManager : MonoBehaviour
 
     private void AddBattle(BattleMessage bMsg, int i)
     {
+        //Check for duplicate (i.e. leaving player)
+        foreach (var player in battleLobby)
+        {
+            if (player.data.playerName == bMsg.playerName)
+            {
+                battleLobby.Remove(player);
+                Debug.Log("Player Removed!: " + bMsg.playerName);
+                return;
+            }
+        }
         var battle = new Battle();
         battle.data = bMsg;
         battle.playerID = m_Connections[i].InternalId;

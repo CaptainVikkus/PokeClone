@@ -14,7 +14,6 @@ public class NetworkBattleSystem : MonoBehaviour
     [SerializeField] BattleHud playerHud;
     [SerializeField] BattleHud enemyHud;
     [SerializeField] BattleDialogBox dialogBox;
-    private NetworkBattleServer battleServer;
 
     public event Action<bool> OnBattleOver;
 
@@ -26,7 +25,6 @@ public class NetworkBattleSystem : MonoBehaviour
     private void Start()
     {
         SendBattleMessage();
-        //StartBattle();
     }
 
     public void StartBattle()
@@ -189,6 +187,7 @@ public class NetworkBattleSystem : MonoBehaviour
             enemyUnit.PlayFaintAnimation();
 
             yield return StartCoroutine(RewardPlayer());
+            SendBattleMessage();
             OnBattleOver(true);
         }
         else // keep going
@@ -231,6 +230,7 @@ public class NetworkBattleSystem : MonoBehaviour
             playerUnit.PlayFaintAnimation();
 
             yield return new WaitForSeconds(2f);
+            SendBattleMessage();
             OnBattleOver(false);
         }
         else
@@ -283,6 +283,7 @@ public class NetworkBattleSystem : MonoBehaviour
             else if (currentAction == 1)
             {
                 // Run
+                SendBattleMessage();
                 OnBattleOver(false);
             }
         }

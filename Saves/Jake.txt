@@ -1,1 +1,1 @@
-{"pokemonBaseName":"Charmander","lvl":5,"hp":12}
+{"pokemonBaseName":"Bulbasaur","lvl":25,"hp":21}
